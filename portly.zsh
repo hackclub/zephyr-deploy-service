@@ -15,5 +15,12 @@ function get_reserved_ports() {
 
 local reserved_ports=("${(@f)$(get_reserved_ports)}")
 
-printf '%s\n' "${reserved_ports[@]}"
+for line in ${reserved_ports[@]}; do
+	local folder
+	local port
+	while IFS=$'\t' read -A resv_port; do
+		folder=${resv_port[1]}
+		port=${resv_port[2]}
+	done < <(echo "$line")
+done
 
