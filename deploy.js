@@ -20,8 +20,8 @@ console.log()
 if (methods.includes("ISDIR") && file.endsWith(".zephyr")) {
     execute([`git init ${folder}${file}`])
     const readmeTemplate = compile(readFileSync('/opt/zephyr/watcher/README_template.hbs', 'utf8'))
-    writeFileSync(`/opt/zephyrnet/${dir}/README.md`, readmeTemplate({
-        site: dir
+    writeFileSync(`/opt/zephyrnet/${file}/README.md`, readmeTemplate({
+        site: file
     }))
 }
 
