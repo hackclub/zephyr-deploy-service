@@ -1,5 +1,6 @@
-const { readdirSync, readFileSync } = require('fs')
+const { readdirSync, readFileSync, writeFileSync } = require('fs')
 const fetch = require('sync-fetch')
+const { compile } = require("handlebars")
 
 const [, , folder, methods, file] = process.argv;
 
@@ -32,7 +33,7 @@ const addRecord = (obj) => fetch("http://10.10.8.210:9191/api/v1/servers/localho
 if (!methods.includes("ISDIR") && folder.endsWith(".zephyr/")) {
     switch (file) {
         case "entry.sh":
-
+            
         case "index.html":
             const files = readdirSync(folder)
             if (files.includes("entry.sh")) {
@@ -41,9 +42,17 @@ if (!methods.includes("ISDIR") && folder.endsWith(".zephyr/")) {
                 console.log(`[log] loading static file loader`)
                 const staticConfTemplate = compile(readFileSync('/opt/zephyr/watcher/static_conf_template.hbs', 'utf8'))
                 const name = folder.split("/")[3]
-                writeFileSync(`/etc/nginx/sites-enabled/${dir}.conf`, staticConfTemplate({
-                    site: dir
+                
+                writeFileSync(`/etc/nginx/sites-enabled/${name}.conf`, staticConfTemplate({
+                    site: name
                 }))
+
+                addRecord({
+                    name,
+                    type: "A",
+                    content: "10.10.8.210"
+                })
+
             }
             
         default:
