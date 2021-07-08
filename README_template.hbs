@@ -1,0 +1,24 @@
+# Quick setup
+
+```
+git clone zephyrnet.hackclub.com:/opt/zephyrnet/{{site}}/.git
+cd {{site}}/
+```
+
+##...or push an existing repo from the command line
+
+```
+git remote add origin zephyrnet.hackclub.com:/opt/zephyrnet/{{site}}/.git
+git branch -M main
+git push -u origin main
+```
+
+# Deployment
+
+If you have an index.html file, everything in {{site}} will be hosted at http://{{site}}.
+
+##...or run something dynamically
+
+```
+touch Procfile
+```
