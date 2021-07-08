@@ -9,6 +9,11 @@ echo rootdir $rootdir
 
 local testdir="$scriptdir"/test/portly
 
-local reserved_ports=`grep -Po '.*PORT=\K(\d+)' "$testdir"/*.zephyr/.env | sed 's/:\([0-9]\+\)/\t\1/'`
-echo reserved_ports $reserved_ports
+function get_reserved_ports() {
+	grep -Po '.*PORT=\K(\d+)' "$testdir"/*.zephyr/.env | sed 's/:\([0-9]\+\)/\t\1/'
+}
+
+local reserved_ports=("${(@f)$(get_reserved_ports)}")
+
+printf '%s\n' "${reserved_ports[@]}"
 
