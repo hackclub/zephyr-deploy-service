@@ -48,6 +48,11 @@ const addRecord = (obj) => fetch("http://10.10.8.210:9191/api/v1/servers/localho
 
 // We need to check only on file creation, not folders, and we can emulate first-tier checking
 if (!methods.includes("ISDIR") && folder.endsWith(".zephyr/")) {
+
+    const readmeTemplate = compile(readFileSync('/opt/zephyr/watcher/README_template.hbs', 'utf8'))
+    writeFileSync(`/opt/zephyrnet/${dir}/README.md`, readmeTemplate({
+        site: dir
+    }))
     switch (file) {
         case "entry.sh":
             const files = readdirSync(folder)
