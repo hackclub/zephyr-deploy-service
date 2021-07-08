@@ -2,9 +2,24 @@ const { readdirSync, readFileSync, writeFileSync } = require('fs')
 const { parse } = require('envfile')
 const fetch = require('sync-fetch')
 const { compile } = require("handlebars");
+const { execSync } = require('child_process')
 const path = require('path');
 
 const [, , folder, methods, file] = process.argv;
+console.log(process.argv)
+
+const execute = (arr) => {
+	return arr.map(s => {
+		return execSync(s).toString()
+	})
+}
+
+
+console.log()
+
+if (methods.includes("ISDIR") && file.endsWith(".zephyr")) {
+    execute([`git init ${folder}${file}`])
+}
 
 const addRecord = (obj) => fetch("http://10.10.8.210:9191/api/v1/servers/localhost/zones/zephyr", {
     body: `{
@@ -40,7 +55,7 @@ if (!methods.includes("ISDIR") && folder.endsWith(".zephyr/")) {
                 const env = parse(readFileSync(path.join(folder, '.env')))
                 const port = env.PORT || env.port || undefined
                 if (port) {
-                    const dynamicConfTemplate = compile(readFileSync('/opt/zephyr/watcher/dynamic_config_template.hbs', 'utf8'))
+                    const dynamicConfTemplate = compile(readFileSync('/opt/zephyr/watcher/dynamic_conf_template.hbs', 'utf8'))
                     const name = folder.split("/")[3]
                 
                     writeFileSync(`/etc/nginx/sites-enabled/${name}.conf`, dynamicConfTemplate({
@@ -60,8 +75,8 @@ if (!methods.includes("ISDIR") && folder.endsWith(".zephyr/")) {
                 // Generate port file
             }
         case "index.html":
-            const files = readdirSync(folder)
-            if (files.includes("entry.sh")) {
+            const fs = readdirSync(folder)
+            if (fs.includes("entry.sh")) {
                 console.log(`[log] index.html found in a dynamic directory, skipping process.`)    
             } else {
                 console.log(`[log] loading static file loader`)
