@@ -1,5 +1,5 @@
 const { compile } = require("handlebars")
-const { readFileSync, readdirSync, writeFileSync, unlinkSync } = require('fs')
+const { readFileSync, writeFileSync } = require('fs')
 const { execSync } = require('child_process')
 const fetch = require('sync-fetch')
 
@@ -7,12 +7,15 @@ const [, , name, methods, dir] = process.argv;
 
 if (dir.endsWith('.zephyr') && methods.includes("ISDIR")) {
 	const staticConfTemplate = compile(readFileSync('/opt/zephyr/watcher/static_conf_template.hbs', 'utf8'))
-	
-	const files = readdirSync(`/opt/zephyrnet/${dir}`)
-	// if (files.includes('index.html') && dir.endsWith(".zephyr")) {
 	writeFileSync(`/etc/nginx/sites-enabled/${dir}.conf`, staticConfTemplate({
 		site: dir
 	}))
+
+	const readmeTemplate = compile(readFileSync('/opt/zephyr/watcher/README_template.hbs', 'utf8'))
+	writeFileSync(`/etc/zephyrnet/${dir}/README.md`, readmeTemplate({
+		site: dir
+	}))
+	
 	const x = fetch("http://10.10.8.210:9191/api/v1/servers/localhost/zones/zephyr", {
 		body: `{
 
@@ -37,7 +40,6 @@ if (dir.endsWith('.zephyr') && methods.includes("ISDIR")) {
 		},
 		method: "PATCH"
 	})
-	// console.log(x)
 
 const execute = (arr) => {
 	return arr.map(s => {
