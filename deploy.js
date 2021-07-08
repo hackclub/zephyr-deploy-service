@@ -1,4 +1,5 @@
 const { readdirSync, readFileSync, writeFileSync } = require('fs')
+const { parse } = require('envfile')
 const fetch = require('sync-fetch')
 const { compile } = require("handlebars")
 
@@ -38,7 +39,12 @@ if (!methods.includes("ISDIR") && folder.endsWith(".zephyr/")) {
 
     switch (file) {
         case "entry.sh":
-            
+            const files = readdirSync(folder)
+            if (files.includes('.env')) {
+                console.log("[warn] no port found yet.")
+            } else {
+                const 
+            }
         case "index.html":
             const files = readdirSync(folder)
             if (files.includes("entry.sh")) {
