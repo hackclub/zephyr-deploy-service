@@ -9,18 +9,19 @@ echo rootdir $rootdir
 
 local testdir="$scriptdir"/test/portly
 
-function get_reserved_ports() {
+function _get_reserved_ports() {
 	grep -Po '.*PORT=\K(\d+)' "$testdir"/*.zephyr/.env | sed 's/:\([0-9]\+\)/\t\1/'
 }
 
-local reserved_ports=("${(@f)$(get_reserved_ports)}")
+function get_reserved_ports() {
+	local _reserved_ports=("${(@f)$(_get_reserved_ports)}")
+	local reserved_ports=()
+	for line in ${_reserved_ports[@]}; do
+		while IFS=$'\t' read -A resv_port; do
+			reserved_ports+=(${resv_port[1]}, ${resv_port[2]})
+		done < <(echo "$line")
+	done
+	echo "${reserved_ports[@]}" | tr ',' '\n'
+}
 
-for line in ${reserved_ports[@]}; do
-	local folder
-	local port
-	while IFS=$'\t' read -A resv_port; do
-		folder=${resv_port[1]}
-		port=${resv_port[2]}
-	done < <(echo "$line")
-done
-
+get_reserved_ports
