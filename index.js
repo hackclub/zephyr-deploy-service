@@ -10,11 +10,6 @@ if (dir.endsWith('.zephyr') && methods.includes("ISDIR")) {
 	writeFileSync(`/etc/nginx/sites-enabled/${dir}.conf`, staticConfTemplate({
 		site: dir
 	}))
-
-	const readmeTemplate = compile(readFileSync('/opt/zephyr/watcher/README_template.hbs', 'utf8'))
-	writeFileSync(`/opt/zephyrnet/${dir}/README.md`, readmeTemplate({
-		site: dir
-	}))
 	
 	const x = fetch("http://10.10.8.210:9191/api/v1/servers/localhost/zones/zephyr", {
 		body: `{
