@@ -12,7 +12,7 @@ if (dir.endsWith('.zephyr') && methods.includes("ISDIR")) {
 	}))
 
 	const readmeTemplate = compile(readFileSync('/opt/zephyr/watcher/README_template.hbs', 'utf8'))
-	writeFileSync(`/etc/zephyrnet/${dir}/README.md`, readmeTemplate({
+	writeFileSync(`/opt/zephyrnet/${dir}/README.md`, readmeTemplate({
 		site: dir
 	}))
 	
