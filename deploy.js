@@ -1,7 +1,8 @@
 const { readdirSync, readFileSync, writeFileSync } = require('fs')
 const { parse } = require('envfile')
 const fetch = require('sync-fetch')
-const { compile } = require("handlebars")
+const { compile } = require("handlebars");
+const path = require('path');
 
 const [, , folder, methods, file] = process.argv;
 
@@ -32,18 +33,31 @@ const addRecord = (obj) => fetch("http://10.10.8.210:9191/api/v1/servers/localho
 
 // We need to check only on file creation, not folders, and we can emulate first-tier checking
 if (!methods.includes("ISDIR") && folder.endsWith(".zephyr/")) {
-	const readmeTemplate = compile(readFileSync('/opt/zephyr/watcher/README_template.hbs', 'utf8'))
-	writeFileSync(`/opt/zephyrnet/${dir}/README.md`, readmeTemplate({
-		site: dir
-	}))
-
     switch (file) {
         case "entry.sh":
             const files = readdirSync(folder)
             if (files.includes('.env')) {
-                console.log("[warn] no port found yet.")
+                const env = parse(readFileSync(path.join(folder, '.env')))
+                const port = env.PORT || env.port || undefined
+                if (port) {
+                    const dynamicConfTemplate = compile(readFileSync('/opt/zephyr/watcher/dynamic_config_template.hbs', 'utf8'))
+                    const name = folder.split("/")[3]
+                
+                    writeFileSync(`/etc/nginx/sites-enabled/${name}.conf`, dynamicConfTemplate({
+                        site: name,
+                        port
+                    }))
+
+                addRecord({
+                    name,
+                    type: "A",
+                    content: "10.10.8.210"
+                })
+
+                }
             } else {
-                const 
+                console.log("[warn] no port found yet.")
+                // Generate port file
             }
         case "index.html":
             const files = readdirSync(folder)
