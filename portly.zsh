@@ -39,17 +39,16 @@ function get_free_port() { # recursive
 
 function free_port() {
 	# free up a port by deleting one from a .env in a *.zephyr folder
-	set -x
 	local domain="$1"
 	local port=$RESERVED_DOMAINS[$domain]
-	if [[ ! -v 1 ]] || [[ ! -v RESERVED_DOMAINS[$domain] ]]; then
+	#if [[ ! -v 1 ]] || [[ ! -v RESERVED_DOMAINS[$domain] ]]; then
+	if [[ ! -v 1 ]] || [[ ! -d $testdir/$domain ]]; then
 		>&2 echo 'pass a valid reserved domain (not "'"$1"'")' && exit -1;
 	fi
 	local envfile="$testdir"/"$domain"/.env
 	sed -i '/^PORT=/ d' "$envfile"
 	unset "RESERVED_PORTS[$port]"
 	unset "RESERVED_DOMAINS[$domain]"
-	set +x
 }
 
 
@@ -78,11 +77,12 @@ if [[ "$command" == "print" ]]; then
 		printf '%s %s\n' "$port" "$domain"
 	done) | column -t
 elif [[ "$command" == "free_port" ]]; then
-	echo "freeing port for $2"
+	echo "freeing port for $2=$RESERVED_DOMAINS[$2]"
 	free_port "$2"
 elif [[ "$command" == "reserve_port" ]]; then
 	echo "reserving port for $2"
 	reserve_port "$2"
+	echo "set port for $2=$RESERVED_DOMAINS[$2]"
 else
 	>&2 echo "no command selected (try 'print', 'reserve_port', or 'free_port')"
 fi
