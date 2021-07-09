@@ -20,7 +20,7 @@ if (methods.includes("ISDIR") && file.endsWith(".zephyr")) {
 
     // Create the deploy repo & copy the git hook to it
     execute([`git init ${deployRepo} --bare --shared`])
-    copyFileSync('/opt/zephyr/watcher/git_post_recieve_template.bash', `${deployRepo}/.git/hooks/post-receive`)
+    copyFileSync('/opt/zephyr/watcher/git_post_recieve_template.bash', `${deployRepo}/hooks/post-receive`)
 
     // Create the origin repo and give it the deploy repo as a remote
     execute([`git init ${originRepo} --shared`])
