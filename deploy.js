@@ -1,4 +1,4 @@
-const { readdirSync, readFileSync, writeFileSync } = require('fs')
+const { readdirSync, readFileSync, writeFileSync, copyFileSync, existsSync } = require('fs')
 const { parse } = require('envfile')
 const fetch = require('sync-fetch')
 const { compile } = require("handlebars");
@@ -15,19 +15,28 @@ const execute = (arr) => {
 }
 
 if (methods.includes("ISDIR") && file.endsWith(".zephyr")) {
-    execute([`git init /opt/zephyr/repos/${folder}${file} --bare --shared`])
-    execute([`git init ${folder}${file} --shared`])
-    execute([`git remote add deploy /opt/zephyr/repos/${folder}${file}/.git ${folder}${file}`])
-    writeFileSync(`/opt/zephyr/repos/${file}/.git/hooks/post-receive`, readFileSync('/opt/zephyr/watcher/git_post_recieve_template.bash', 'utf8'))
+    const originRepo = `${folder}${file}`
+    const deployRepo = `/opt/zephyr/repos/${file}`
 
-}
+    // Create the deploy repo & copy the git hook to it
+    execute([`git init ${deployRepo} --bare --shared`])
+    copyFileSync('/opt/zephyr/watcher/git_post_recieve_template.bash', `${deployRepo}/hooks/post-receive`)
 
-if (methods.includes("ISDIR") && file.endsWith(".zephyr")) {
-    execute([`git init ${folder}${file}`])
-    const readmeTemplate = compile(readFileSync('/opt/zephyr/watcher/README_template.hbs', 'utf8'))
-    writeFileSync(`/opt/zephyrnet/${file}/README.md`, readmeTemplate({
-        site: file 
-    }))
+    // Create the origin repo and give it the deploy repo as a remote
+    execute([`git init ${originRepo} --shared`])
+    execute([`cd ${originRepo} && git remote add deploy zephyrnet.hackclub.com:${deployRepo}`])
+
+    if (!existsSync(`/opt/zephyrnet/${file}/README.md`)) {
+        const readmeTemplate = compile(readFileSync('/opt/zephyr/watcher/README_template.hbs', 'utf8'))
+        writeFileSync(`/opt/zephyrnet/${file}/README.md`, readmeTemplate({
+            site: file 
+        }))
+        execute([`chmod -R a+wr ${originRepo}/README.md`])
+    }
+
+    // Lazy way to make sure everyone can commit/push/pull & 
+    execute([`chmod -R a+wr ${originRepo}/.git`])
+    execute([`chmod -R a+wrx ${deployRepo}`])
 }
 
 const addRecord = (obj) => fetch("http://10.10.8.210:9191/api/v1/servers/localhost/zones/zephyr", {
