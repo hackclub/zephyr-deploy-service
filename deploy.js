@@ -1,4 +1,4 @@
-const { readdirSync, readFileSync, writeFileSync, copyFileSync } = require('fs')
+const { readdirSync, readFileSync, writeFileSync, copyFileSync, existsSync } = require('fs')
 const { parse } = require('envfile')
 const fetch = require('sync-fetch')
 const { compile } = require("handlebars");
@@ -26,10 +26,12 @@ if (methods.includes("ISDIR") && file.endsWith(".zephyr")) {
     execute([`git init ${originRepo} --shared`])
     execute([`cd ${originRepo} && git remote add deploy zephyrnet.hackclub.com:${deployRepo}`])
 
-    const readmeTemplate = compile(readFileSync('/opt/zephyr/watcher/README_template.hbs', 'utf8'))
-    writeFileSync(`/opt/zephyrnet/${file}/README.md`, readmeTemplate({
-        site: file 
-    }))
+    if (!existsSync(`/opt/zephyrnet/${file}/README.md`)) {
+        const readmeTemplate = compile(readFileSync('/opt/zephyr/watcher/README_template.hbs', 'utf8'))
+        writeFileSync(`/opt/zephyrnet/${file}/README.md`, readmeTemplate({
+            site: file 
+        }), {mode: 0o666})
+    }
 
     // Lazy way to make sure everyone can commit/push/pull & 
     execute([`chmod -R a+wr ${originRepo}/.git`])
