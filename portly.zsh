@@ -81,9 +81,12 @@ if [[ "$command" == "print" ]]; then
 	for port domain in ${(kv)reservations[@]}; do
 		printf '%s %s\n' "$port" "$domain"
 	done) | column -t
+
 elif [[ "$command" == "free_port" ]]; then
 	echo "freeing port for $2=$RESERVED_DOMAINS[$2]"
 	free_port "$2"
+	echo "freed port for $2"
+
 elif [[ "$command" == "reserve_port" ]]; then
 	echo "reserving port for $2"
 	reserve_port "$2"
