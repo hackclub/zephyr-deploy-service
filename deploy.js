@@ -1,4 +1,4 @@
-const { readdirSync, readFileSync, writeFileSync } = require('fs')
+const { readdirSync, readFileSync, writeFileSync, copyFileSync } = require('fs')
 const { parse } = require('envfile')
 const fetch = require('sync-fetch')
 const { compile } = require("handlebars");
@@ -15,15 +15,17 @@ const execute = (arr) => {
 }
 
 if (methods.includes("ISDIR") && file.endsWith(".zephyr")) {
-    execute([`git init /opt/zephyr/repos/${folder}${file} --bare --shared`])
-    execute([`git init ${folder}${file} --shared`])
-    execute([`cd ${folder}${file} && git remote add deploy /opt/zephyr/repos${file}/.git`])
-    writeFileSync(`/opt/zephyr/repos${file}/.git/hooks/post-receive`, readFileSync('/opt/zephyr/watcher/git_post_recieve_template.bash', 'utf8'))
+    const originRepo = `${folder}${file}`
+    const deployRepo = `/opt/zephyr/repos/${file}`
 
-}
+    // Create the deploy repo & copy the git hook to it
+    execute([`git init ${deployRepo} --bare --shared`])
+    copyFileSync('/opt/zephyr/watcher/git_post_recieve_template.bash', `${deployRepo}/.git/hooks/post-receive`)
 
-if (methods.includes("ISDIR") && file.endsWith(".zephyr")) {
-    execute([`git init ${folder}${file}`])
+    // Create the origin repo and give it the deploy repo as a remote
+    execute([`git init ${originRepo} --shared`])
+    execute([`cd ${originRepo} && git remote add deploy ${deployRepo}/.git`])
+
     const readmeTemplate = compile(readFileSync('/opt/zephyr/watcher/README_template.hbs', 'utf8'))
     writeFileSync(`/opt/zephyrnet/${file}/README.md`, readmeTemplate({
         site: file 
