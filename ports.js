@@ -2,7 +2,7 @@ const fs = require("fs")
 const { join } = require("path")
 const envfile = require('envfile')
 
-const dir = "./test/portly"
+const dir = "/opt/zephyrnet"
 
  const getPorts = () => {
     return JSON.parse(fs.readFileSync("./ports.json"))
