@@ -49,6 +49,7 @@ function free_port() {
 	sed -i '/^PORT=/ d' "$envfile"
 	unset "RESERVED_PORTS[$port]"
 	unset "RESERVED_DOMAINS[$domain]"
+	write_portdb
 }
 
 
@@ -65,22 +66,50 @@ function reserve_port() {
 	echo 'PORT='"$port" >> "$envfile"
 	RESERVED_PORTS[$port]=$domain
 	RESERVED_DOMAINS[$domain]=$port
+	write_portdb
 }
 
 
-# {{{
-local command="${1:-/dev/null}"
+# {{{ print functions
+function print_ports_header() {
+	local first="${1:-domain}"
+	[[ "$first" == "port" ]] \
+		&& echo PORT'\t'DOMAIN \
+		|| echo DOMAIN'\t'PORT
+}
 
-if [[ "$command" == "print" ]]; then
-	local first="${2:-domain}"
+function print_ports() {
+	local first="${1:-domain}"
 	local reservations;
 	if [[ "$first" == "port" ]];
 	then reservations=(${(kv)RESERVED_PORTS[@]});
 	else reservations=(${(kv)RESERVED_DOMAINS[@]}); fi
-	([[ "$first" == "port" ]] && echo 'PORT' 'DOMAIN' || echo 'DOMAIN' 'PORT';
 	for port domain in ${(kv)reservations[@]}; do
-		printf '%s %s\n' "$port" "$domain"
-	done) | column -t
+		printf '%s\t%s\n' "$port" "$domain"
+	done
+}
+
+function print_ports_full() {
+ 	(print_ports_header "$1"; print_ports)
+}
+
+function write_portdb() {
+	print_ports_full "$1" > "$portdb"
+}
+# }}} print functions
+
+
+# {{{ cli subcommands
+local command="${1:-/dev/null}"
+
+if [[ "$command" == "print" ]]; then
+	print_ports_full "$2" | column -t
+
+elif [[ "$command" == "writedb" ]]; then
+	local portdb="$testdir"/ports.tsv
+	echo "Writing ports to $portdb"
+	write_portdb
+	echo "Ports written to $portdb"
 
 elif [[ "$command" == "free_port" ]]; then
 	echo "freeing port for $2=$RESERVED_DOMAINS[$2]"
@@ -91,9 +120,10 @@ elif [[ "$command" == "reserve_port" ]]; then
 	echo "reserving port for $2"
 	reserve_port "$2"
 	echo "set port for $2=$RESERVED_DOMAINS[$2]"
+
 else
-	>&2 echo "no command selected (try 'print', 'reserve_port \$domain', or 'free_port \$domain')"
+	>&2 echo "no command selected (try 'print', 'writedb', 'reserve_port \$domain', 'free_port \$domain')"
 fi
-# }}}
+# }}} cli subcommands
 
 
