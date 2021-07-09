@@ -24,7 +24,7 @@ if (methods.includes("ISDIR") && file.endsWith(".zephyr")) {
 
     // Create the origin repo and give it the deploy repo as a remote
     execute([`git init ${originRepo} --shared`])
-    execute([`cd ${originRepo} && git remote add deploy ${deployRepo}/.git`])
+    execute([`cd ${originRepo} && git remote add deploy zephyrnet.hackclub.com:${deployRepo}`])
 
     const readmeTemplate = compile(readFileSync('/opt/zephyr/watcher/README_template.hbs', 'utf8'))
     writeFileSync(`/opt/zephyrnet/${file}/README.md`, readmeTemplate({
