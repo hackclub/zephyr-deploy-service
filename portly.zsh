@@ -19,10 +19,10 @@ portly.zsh:
 		--dir  operate on this root directory (should be /opt/zephyrnet)
 
 	commands:
-		--cmd print                        DOMAINS and PORTS in two columns
-		--cmd writdb                       write a 'DOMAIN	PORT' file to "\$dir"/ports.tsv
-		--cmd free_port orpheus.zephyr     free the port a reserved port
-		--cmd reserve_port orpheus.zephyr  reserve a random port
+		--cmd print                   DOMAINS and PORTS in two columns
+		--cmd writdb                  write a 'DOMAIN	PORT' file to "\$dir"/ports.tsv
+		--cmd free orpheus.zephyr     free the port a reserved port
+		--cmd reserve orpheus.zephyr  reserve a random port
 EOF
 }
 
@@ -30,6 +30,7 @@ declare -A misc
 zparseopts -E -D -F \
     -dir:=o_dir \
     -cmd:=o_cmd \
+    -domain:=o_domain \
     r=o_rev \
     || print_help
 
@@ -39,7 +40,6 @@ zparseopts -E -D -F \
 #exit
 
 local rootdir="${o_dir[2]:-$testdir}"
-#echo rootdir $rootdir
 
 function _get_reserved_ports() {
 	grep -Po '.*PORT=\K(\d+)' "$rootdir"/*.zephyr/.env | sed 's/:\([0-9]\+\)/\t\1/'
@@ -71,16 +71,18 @@ function get_free_port() { # recursive
 function free_port() {
 	# free up a port by deleting one from a .env in a *.zephyr folder
 	local domain="$1"
-	local port=$RESERVED_DOMAINS[$domain]
+	local port="${RESERVED_DOMAINS[$domain]:-/dev/null}"
 	#if [[ ! -v 1 ]] || [[ ! -v RESERVED_DOMAINS[$domain] ]]; then
-	if [[ ! -v 1 ]] || [[ ! -d $rootdir/$domain ]]; then
+	if [[ "$domain" == "" ]] || [[ ! -d $rootdir/$domain ]]; then
 		>&2 echo 'pass a valid reserved domain (not "'"$1"'")' && exit -1;
 	fi
-	local envfile="$rootdir"/"$domain"/.env
-	sed -i '/^PORT=/ d' "$envfile"
-	unset "RESERVED_PORTS[$port]"
-	unset "RESERVED_DOMAINS[$domain]"
-	write_portdb
+	if [[ "$port" != "/dev/null" ]]; then
+		local envfile="$rootdir"/"$domain"/.env
+		sed -i '/^PORT=/ d' "$envfile"
+		unset "RESERVED_PORTS[$port]"
+		unset "RESERVED_DOMAINS[$domain]"
+		write_portdb
+	fi
 }
 
 
@@ -88,7 +90,7 @@ function reserve_port() {
 	# reserve a random port by adding one to a .env in a *.zephyr folder
 	# deletes any existing port reservation
 	local domain="$1"
-	if [[ ! -v 1 ]] || [[ ! -d $rootdir/$domain ]]; then
+	if [[ "$domain" == "" ]] || [[ ! -d $rootdir/$domain ]]; then
 		>&2 echo 'pass a valid reserved domain (not "'"$1"'")' && exit -1;
 	fi
 	local envfile="$rootdir"/"$domain"/.env
@@ -129,28 +131,31 @@ function write_portdb() {
 
 
 # {{{ cli subcommands
-local command="${o_cmd[2]:-/dev/null}"
+local cmd="${o_cmd[2]:-/dev/null}"
+local domain="${o_domain[2]:-/dev/null}"
 
-if [[ "$command" == "print" ]]; then
+if [[ "$cmd" == "print" ]]; then
 	print_ports_full | column -t
 
-elif [[ "$command" == "writedb" ]]; then
+elif [[ "$cmd" == "writedb" ]]; then
 	local portdb="$rootdir"/ports.tsv
 	echo "Writing ports to $portdb"
 	write_portdb "$portdb"
 	echo "Ports written to $portdb"
 
-elif [[ "$command" == "free_port" ]]; then
-	echo "freeing port for $3=$RESERVED_DOMAINS[$3]"
-	free_port "$3"
-	echo "freed port for $3"
+elif [[ "$cmd" == "free" ]]; then
+	if [[ $domain == /dev/null ]]; then >&2 pass a valid domain; exit 1; fi
+	echo "freeing port for $domain=${RESERVED_DOMAINS[$domain]:-NULL}"
+	free_port "$domain"
+	echo "freed port for $domain"
 
-elif [[ "$command" == "reserve_port" ]]; then
-	echo "reserving port for $3"
-	reserve_port "$3"
-	echo "set port for $3=$RESERVED_DOMAINS[$3]"
+elif [[ "$cmd" == "reserve" ]]; then
+	if [[ $domain == /dev/null ]]; then >&2 pass a valid domain; exit 1; fi
+	echo "reserving port for $domain"
+	reserve_port "$domain"
+	echo "set port for $domain=${RESERVED_DOMAINS[$domain]:-NULL}"
 
-elif [[ "$command" == "help" ]]; then
+elif [[ "$cmd" == "help" ]]; then
 	print_help
 
 else
