@@ -30,7 +30,8 @@ if (methods.includes("ISDIR") && file.endsWith(".zephyr")) {
         const readmeTemplate = compile(readFileSync('/opt/zephyr/watcher/README_template.hbs', 'utf8'))
         writeFileSync(`/opt/zephyrnet/${file}/README.md`, readmeTemplate({
             site: file 
-        }), {mode: 0o666})
+        }))
+        execute([`chmod -R a+wr ${originRepo}/README.md`])
     }
 
     // Lazy way to make sure everyone can commit/push/pull & 
