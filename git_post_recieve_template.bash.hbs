@@ -12,7 +12,7 @@ fi
 
 # To maintain our sanity, we're going to run all the services under orpheus
 # instead of the pushing user
-user=`orpheus`
+user=`systemctluser`
 
 git show HEAD:entrypoint.sh 1>&2 2>/dev/null
 entrypoint_status=$?
@@ -23,13 +23,13 @@ if [ $entrypoint_status -eq 0 ]; then
         echo "no existing systemd service found, initializing zephyrnet-{{site}}-deployment.service"
         handlebars --site '{{site}}' < /etc/zephyr/watcher/systemd-template-unit.service.hbs > /home/$user/.config/systemd/user/zephyrnet-{{site}}-deployment.service
         echo "   ...systemd service created!"
-        su - $user -c 'systemctl --user daemon-reload'
+        su - $user -c 'sudo systemctl daemon-reload'
         echo "   ...systemd daemon reloaded!"
-        su - $user -c 'systemctl --user enable --start zephyrnet-{{site}}-deployment.service'
+        su - $user -c 'sudo systemctl enable --start zephyrnet-{{site}}-deployment.service'
         echo "   ...systemd service enabled!"
     else
         echo "restarting zephyrnet-{{site}}-deployment.service..."
-        su - $user -c 'systemctl --user restart zephyrnet-{{site}}-deployment.service'
+        su - $user -c 'sudo systemctl restart zephyrnet-{{site}}-deployment.service'
         echo "   ...done!"
     fi
 else
