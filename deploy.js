@@ -31,9 +31,9 @@ if (methods.includes("ISDIR") && file.endsWith(".zephyr")) {
         site: file 
     }))
 
-    // Lazy way to make sure everyone can commit/push/pull. Test this if you change it from a+wr.
-    execute([`chmod -R a+wr ${originRepo}`])
-    execute([`chmod -R a+wr ${deployRepo}`])
+    // Lazy way to make sure everyone can commit/push/pull & 
+    execute([`chmod -R a+wr ${originRepo}/.git`])
+    execute([`chmod -R a+wrx ${deployRepo}`])
 }
 
 const addRecord = (obj) => fetch("http://10.10.8.210:9191/api/v1/servers/localhost/zones/zephyr", {
