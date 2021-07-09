@@ -72,19 +72,27 @@ function reserve_port() {
 local command="${1:-/dev/null}"
 
 if [[ "$command" == "print" ]]; then
-	(echo 'PORT' 'DOMAIN'; 
-	for port domain in ${(kv)RESERVED_PORTS[@]}; do
+	local first="${2:-domain}"
+	local reservations;
+	if [[ "$first" == "port" ]];
+	then reservations=(${(kv)RESERVED_PORTS[@]});
+	else reservations=(${(kv)RESERVED_DOMAINS[@]}); fi
+	([[ "$first" == "port" ]] && echo 'PORT' 'DOMAIN' || echo 'DOMAIN' 'PORT';
+	for port domain in ${(kv)reservations[@]}; do
 		printf '%s %s\n' "$port" "$domain"
 	done) | column -t
+
 elif [[ "$command" == "free_port" ]]; then
 	echo "freeing port for $2=$RESERVED_DOMAINS[$2]"
 	free_port "$2"
+	echo "freed port for $2"
+
 elif [[ "$command" == "reserve_port" ]]; then
 	echo "reserving port for $2"
 	reserve_port "$2"
 	echo "set port for $2=$RESERVED_DOMAINS[$2]"
 else
-	>&2 echo "no command selected (try 'print', 'reserve_port', or 'free_port')"
+	>&2 echo "no command selected (try 'print', 'reserve_port \$domain', or 'free_port \$domain')"
 fi
 # }}}
 
