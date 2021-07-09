@@ -30,6 +30,10 @@ if (methods.includes("ISDIR") && file.endsWith(".zephyr")) {
     writeFileSync(`/opt/zephyrnet/${file}/README.md`, readmeTemplate({
         site: file 
     }))
+
+    // Lazy way to make sure everyone can commit/push/pull. Test this if you change it from a+wr.
+    execute([`chmod -R a+wr ${originRepo}`])
+    execute([`chmod -R a+wr ${deployRepo}`])
 }
 
 const addRecord = (obj) => fetch("http://10.10.8.210:9191/api/v1/servers/localhost/zones/zephyr", {
