@@ -9,6 +9,8 @@ ConditionPathIsDirectory=/opt/zephyrnet/{{site}}
 ConditionFileIsExecutable=/opt/zephyrnet/{{site}}/entrypoint.sh
 
 [Service]
+User=orpheus
+WorkingDirectory=/opt/zephyrnet/{{site}}
 Environment=PORT={{port}}
 ExecStartPre=/opt/zephyrnet/{{site}}/entrypoint.sh
 ExecStart=/opt/zephyrnet/{{site}}/entrypoint.sh
@@ -25,4 +27,3 @@ RuntimeDirectoryMode=0755
 
 [Install]
 WantedBy=multi-user.target
-Alias=sshd.service
