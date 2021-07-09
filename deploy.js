@@ -10,9 +10,9 @@ const [, , folder, methods, file] = process.argv;
 console.log(process.argv)
 
 const execute = (arr) => {
-	return arr.map(s => {
-		return execSync(s).toString()
-	})
+    return arr.map(s => {
+        return execSync(s).toString()
+    })
 }
 
 if (methods.includes("ISDIR") && file.endsWith(".zephyr")) {
@@ -30,7 +30,7 @@ if (methods.includes("ISDIR") && file.endsWith(".zephyr")) {
     if (!existsSync(`/opt/zephyrnet/${file}/README.md`)) {
         const readmeTemplate = compile(readFileSync('/opt/zephyr/watcher/README_template.hbs', 'utf8'))
         writeFileSync(`/opt/zephyrnet/${file}/README.md`, readmeTemplate({
-            site: file 
+            site: file
         }))
         execute([`chmod -R a+wr ${originRepo}/README.md`])
     }
@@ -78,17 +78,17 @@ if (!methods.includes("ISDIR") && folder.endsWith(".zephyr/")) {
                 if (port) {
                     const dynamicConfTemplate = compile(readFileSync('/opt/zephyr/watcher/dynamic_conf_template.hbs', 'utf8'))
                     const name = folder.split("/")[3]
-                
+
                     writeFileSync(`/etc/nginx/sites-enabled/${name}.conf`, dynamicConfTemplate({
                         site: name,
                         port
                     }))
 
-                addRecord({
-                    name,
-                    type: "A",
-                    content: "10.10.8.210"
-                })
+                    addRecord({
+                        name,
+                        type: "A",
+                        content: "10.10.8.210"
+                    })
 
                 }
             } else {
@@ -98,12 +98,12 @@ if (!methods.includes("ISDIR") && folder.endsWith(".zephyr/")) {
                 writeFileSync(path.join(folder, '.env'), "# Created by porter (/opt/zephyr/watcher/ports.js")
                 const port = reservePort(name)
                 const dynamicConfTemplate = compile(readFileSync('/opt/zephyr/watcher/dynamic_conf_template.hbs', 'utf8'))
-                    
-                
-                    writeFileSync(`/etc/nginx/sites-enabled/${name}.conf`, dynamicConfTemplate({
-                        site: name,
-                        port
-                    }))
+
+
+                writeFileSync(`/etc/nginx/sites-enabled/${name}.conf`, dynamicConfTemplate({
+                    site: name,
+                    port
+                }))
 
                 addRecord({
                     name,
@@ -114,12 +114,12 @@ if (!methods.includes("ISDIR") && folder.endsWith(".zephyr/")) {
         case "index.html":
             const fs = readdirSync(folder)
             if (fs.includes("entry.sh")) {
-                console.log(`[log] index.html found in a dynamic directory, skipping process.`)    
+                console.log(`[log] index.html found in a dynamic directory, skipping process.`)
             } else {
                 console.log(`[log] loading static file loader`)
                 const staticConfTemplate = compile(readFileSync('/opt/zephyr/watcher/static_conf_template.hbs', 'utf8'))
                 const name = folder.split("/")[3]
-                
+
                 writeFileSync(`/etc/nginx/sites-enabled/${name}.conf`, staticConfTemplate({
                     site: name
                 }))
@@ -131,9 +131,11 @@ if (!methods.includes("ISDIR") && folder.endsWith(".zephyr/")) {
                 })
 
             }
-            
+
         default:
             console.log("[warn] could not identify type of directory.")
             break
     }
+
+    execute(['sudo nginx -s reload'])
 }
