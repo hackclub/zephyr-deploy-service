@@ -4,7 +4,7 @@ const envfile = require('envfile')
 
 const dir = "./test/portly"
 
-export const getPorts = () => {
+ const getPorts = () => {
     return JSON.parse(fs.readFileSync("./ports.json"))
 }
 
@@ -12,7 +12,7 @@ const random = (min, max) => { // min and max included
     return Math.floor(Math.random() * (max - min + 1) + min)
 }
 
-export const genPort = (json) => {
+ const genPort = (json) => {
     const port = random(1000, 9999)
     console.log(port)
     const ports = json || Object.entries(JSON.parse(fs.readFileSync("./ports.json")))
