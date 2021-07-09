@@ -4,14 +4,45 @@ local script=$0:A
 local scriptdir=`dirname $script`
 #echo script $scriptdir scriptdir $scriptdir
 
-local rootdir=${1:-$scriptdir/test/portly}
-#echo rootdir $rootdir
-
 local testdir="$scriptdir"/test/portly
 #echo testdir $testdir
 
+#end_opts=$@[(i)(--|-)]
+#set -- "${@[0,end_opts-1]}" "${@[end_opts+1,-1]}"
+
+function print_help() {
+	>&2 cat <<-EOF
+portly.zsh:
+
+	global flags:
+		-r     reverse the port/domain columns in output
+		--dir  operate on this root directory (should be /opt/zephyrnet)
+
+	commands:
+		--cmd print                        DOMAINS and PORTS in two columns
+		--cmd writdb                       write a 'DOMAIN	PORT' file to "\$dir"/ports.tsv
+		--cmd free_port orpheus.zephyr     free the port a reserved port
+		--cmd reserve_port orpheus.zephyr  reserve a random port
+EOF
+}
+
+declare -A misc
+zparseopts -E -D -F \
+    -dir:=o_dir \
+    -cmd:=o_cmd \
+    r=o_rev \
+    || print_help
+
+#echo "${o_dir[2]}"
+#echo "${o_cmd[2]}"
+#echo "${o_rev}"
+#exit
+
+local rootdir="${o_dir[2]:-$testdir}"
+#echo rootdir $rootdir
+
 function _get_reserved_ports() {
-	grep -Po '.*PORT=\K(\d+)' "$testdir"/*.zephyr/.env | sed 's/:\([0-9]\+\)/\t\1/'
+	grep -Po '.*PORT=\K(\d+)' "$rootdir"/*.zephyr/.env | sed 's/:\([0-9]\+\)/\t\1/'
 }
 
 
@@ -42,10 +73,10 @@ function free_port() {
 	local domain="$1"
 	local port=$RESERVED_DOMAINS[$domain]
 	#if [[ ! -v 1 ]] || [[ ! -v RESERVED_DOMAINS[$domain] ]]; then
-	if [[ ! -v 1 ]] || [[ ! -d $testdir/$domain ]]; then
+	if [[ ! -v 1 ]] || [[ ! -d $rootdir/$domain ]]; then
 		>&2 echo 'pass a valid reserved domain (not "'"$1"'")' && exit -1;
 	fi
-	local envfile="$testdir"/"$domain"/.env
+	local envfile="$rootdir"/"$domain"/.env
 	sed -i '/^PORT=/ d' "$envfile"
 	unset "RESERVED_PORTS[$port]"
 	unset "RESERVED_DOMAINS[$domain]"
@@ -57,10 +88,10 @@ function reserve_port() {
 	# reserve a random port by adding one to a .env in a *.zephyr folder
 	# deletes any existing port reservation
 	local domain="$1"
-	if [[ ! -v 1 ]] || [[ ! -d $testdir/$domain ]]; then
+	if [[ ! -v 1 ]] || [[ ! -d $rootdir/$domain ]]; then
 		>&2 echo 'pass a valid reserved domain (not "'"$1"'")' && exit -1;
 	fi
-	local envfile="$testdir"/"$domain"/.env
+	local envfile="$rootdir"/"$domain"/.env
 	free_port "$domain"
 	local port=`get_free_port`
 	echo 'PORT='"$port" >> "$envfile"
@@ -72,16 +103,14 @@ function reserve_port() {
 
 # {{{ print functions
 function print_ports_header() {
-	local first="${1:-domain}"
-	[[ "$first" == "port" ]] \
-		&& echo PORT'\t'DOMAIN \
-		|| echo DOMAIN'\t'PORT
+	if [[ "$o_rev" == "-r" ]];
+	then echo PORT'\t'DOMAIN
+	else echo DOMAIN'\t'PORT; fi
 }
 
 function print_ports() {
-	local first="${1:-domain}"
 	local reservations;
-	if [[ "$first" == "port" ]];
+	if [[ "$o_rev" == "-r" ]];
 	then reservations=(${(kv)RESERVED_PORTS[@]});
 	else reservations=(${(kv)RESERVED_DOMAINS[@]}); fi
 	for port domain in ${(kv)reservations[@]}; do
@@ -90,39 +119,43 @@ function print_ports() {
 }
 
 function print_ports_full() {
- 	(print_ports_header "$1"; print_ports)
+ 	(print_ports_header; print_ports)
 }
 
 function write_portdb() {
-	print_ports_full "$1" > "$portdb"
+	print_ports_full > "${2:-$rootdir/ports.tsv}"
 }
 # }}} print functions
 
 
 # {{{ cli subcommands
-local command="${1:-/dev/null}"
+local command="${o_cmd[2]:-/dev/null}"
 
 if [[ "$command" == "print" ]]; then
-	print_ports_full "$2" | column -t
+	print_ports_full | column -t
 
 elif [[ "$command" == "writedb" ]]; then
-	local portdb="$testdir"/ports.tsv
+	local portdb="$rootdir"/ports.tsv
 	echo "Writing ports to $portdb"
-	write_portdb
+	write_portdb "$portdb"
 	echo "Ports written to $portdb"
 
 elif [[ "$command" == "free_port" ]]; then
-	echo "freeing port for $2=$RESERVED_DOMAINS[$2]"
-	free_port "$2"
-	echo "freed port for $2"
+	echo "freeing port for $3=$RESERVED_DOMAINS[$3]"
+	free_port "$3"
+	echo "freed port for $3"
 
 elif [[ "$command" == "reserve_port" ]]; then
-	echo "reserving port for $2"
-	reserve_port "$2"
-	echo "set port for $2=$RESERVED_DOMAINS[$2]"
+	echo "reserving port for $3"
+	reserve_port "$3"
+	echo "set port for $3=$RESERVED_DOMAINS[$3]"
+
+elif [[ "$command" == "help" ]]; then
+	print_help
 
 else
-	>&2 echo "no command selected (try 'print', 'writedb', 'reserve_port \$domain', 'free_port \$domain')"
+	print_help
+
 fi
 # }}} cli subcommands
 
