@@ -20,10 +20,13 @@ if (methods.includes("ISDIR") && file.endsWith(".zephyr")) {
     execute([`git remote add deploy /opt/zephyr/repos/${folder}${file}/.git ${folder}${file}`])
     writeFileSync(`/opt/zephyr/repos/${file}/.git/hooks/post-receive`, readFileSync('/opt/zephyr/watcher/git_post_recieve_template.bash', 'utf8'))
 
+}
 
+if (methods.includes("ISDIR") && file.endsWith(".zephyr")) {
+    execute([`git init ${folder}${file}`])
     const readmeTemplate = compile(readFileSync('/opt/zephyr/watcher/README_template.hbs', 'utf8'))
     writeFileSync(`/opt/zephyrnet/${file}/README.md`, readmeTemplate({
-        site: file
+        site: file 
     }))
 }
 
