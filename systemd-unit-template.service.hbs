@@ -12,6 +12,9 @@ ConditionFileIsExecutable=/opt/zephyrnet/{{site}}/entrypoint.sh
 Environment=PORT={{port}}
 ExecStartPre=/opt/zephyrnet/{{site}}/entrypoint.sh
 ExecStart=/opt/zephyrnet/{{site}}/entrypoint.sh
+#TimeoutStartSec=60
+Restart=on-failure
+RestartSec=5
 ExecReload=/bin/kill -HUP $MAINPID
 KillMode=process
 Restart=on-failure
