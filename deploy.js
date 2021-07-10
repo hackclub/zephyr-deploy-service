@@ -1,4 +1,4 @@
-const { readdirSync, readFileSync, writeFileSync, copyFileSync, existsSync } = require('fs')
+const { readdirSync, readFileSync, writeFileSync, existsSync } = require('fs')
 const { parse } = require('envfile')
 const fetch = require('sync-fetch')
 const { compile } = require("handlebars");
