@@ -2,7 +2,7 @@ const { readdirSync, readFileSync, writeFileSync, existsSync } = require('fs')
 const fetch = require('sync-fetch')
 const { compile } = require("handlebars");
 const { execSync } = require('child_process')
-const { getPortFromDomain } = require('./ports')
+const { getPort } = require('./ports')
 
 const [, , folder, methods, file] = process.argv;
 console.log(process.argv)
@@ -80,7 +80,7 @@ if (!methods.includes("ISDIR") && folder.endsWith(".zephyr/")) {
 
             writeFileSync(`/etc/nginx/sites-enabled/${name}.conf`, dynamicConfTemplate({
                 site: name,
-                port: getPortFromDomain(name)
+                port: getPort(name)
             }))
 
             addRecord({
