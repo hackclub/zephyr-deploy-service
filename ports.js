@@ -3,6 +3,7 @@ const { join } = require("path")
 const envfile = require('envfile')
 
 const dir = "/opt/zephyrnet"
+const ports_file = "/dev/"
 
  const getPorts = () => {
     return JSON.parse(fs.readFileSync("./ports.json"))
@@ -37,7 +38,14 @@ const reservePort = (domain) => {
 }
 
 const getPort = (domain) => {
-    return getPorts()[domain]
+    const port = getPorts()[domain]
+    if (port) {
+        return port    
+    } else {
+        reservePort(domain)
+        return getPorts()[domain]
+    }
+    
 }
 
 const freePort = (domain) => {
