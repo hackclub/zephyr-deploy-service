@@ -77,10 +77,12 @@ if (!methods.includes("ISDIR") && folder.endsWith(".zephyr/")) {
             }
             const dynamicConfTemplate = compile(readFileSync('/opt/zephyr/watcher/dynamic_conf_template.hbs', 'utf8'))
             const name = folder.split("/")[3]
+            const port = getPort(name)
+            console.log(`Port '${port}' allocated to domain '${name}'`)
 
             writeFileSync(`/etc/nginx/sites-enabled/${name}.conf`, dynamicConfTemplate({
                 site: name,
-                port: getPort(name)
+                port
             }))
 
             addRecord({
