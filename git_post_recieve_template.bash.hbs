@@ -29,8 +29,10 @@ if [ $entrypoint_status -eq 0 ]; then
         echo "   ...systemd service created!"
         sudo -u $user sudo systemctl daemon-reload
         echo "   ...systemd daemon reloaded!"
-        sudo -u $user sudo systemctl enable --start zephyrnet-{{site}}-deployment.service
+        sudo -u $user sudo systemctl enable zephyrnet-{{site}}-deployment.service
         echo "   ...systemd service enabled!"
+        sudo -u $user sudo systemctl start zephyrnet-{{site}}-deployment.service
+        echo "   ...systemd service started!"
     fi
 else
     echo "No entrypoint.sh file, skipping dynamic deploy"
