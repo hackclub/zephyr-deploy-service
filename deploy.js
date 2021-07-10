@@ -1,10 +1,8 @@
 const { readdirSync, readFileSync, writeFileSync, existsSync } = require('fs')
-const { parse } = require('envfile')
 const fetch = require('sync-fetch')
 const { compile } = require("handlebars");
 const { execSync } = require('child_process')
 const { getPortFromDomain } = require('./ports')
-const path = require('path');
 
 const [, , folder, methods, file] = process.argv;
 console.log(process.argv)
@@ -72,7 +70,7 @@ const addRecord = (obj) => fetch("http://10.10.8.210:9191/api/v1/servers/localho
 // We need to check only on file creation, not folders, and we can emulate first-tier checking
 if (!methods.includes("ISDIR") && folder.endsWith(".zephyr/")) {
     switch (file) {
-        case "entrypoint.sh":
+        case "entrypoint.sh": {
             if (readdirSync(folder).includes("index.html")) {
                 console.log('[warn] index.html already exists in folder, ignoring entrypoint.sh...')
                 break
@@ -91,7 +89,8 @@ if (!methods.includes("ISDIR") && folder.endsWith(".zephyr/")) {
                 content: "10.10.8.210"
             })
             break
-        case "index.html":
+        }
+        case "index.html": {
             if (readdirSync(folder).includes("entrypoint.sh")) {
                 console.log('[warn] entrypoint.sh already exists in folder, ignoring index.html...')
                 break
@@ -110,6 +109,7 @@ if (!methods.includes("ISDIR") && folder.endsWith(".zephyr/")) {
                 content: "10.10.8.210"
             })
             break
+        }
         default:
             console.log("[warn] could not identify type of directory.")
             break
