@@ -1,0 +1,10 @@
+[Unit]
+Description=Deploy Service for Zephyr
+
+[Service]
+ExecStart=/opt/zephyr/watcher/index.bash
+Restart=on-failure
+EnvironmentFile=/etc/environment
+
+[Install]
+WantedBy=multi-user.target
