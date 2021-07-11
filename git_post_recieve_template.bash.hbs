@@ -21,11 +21,11 @@ if [ $entrypoint_status -eq 0 ]; then
 
 
     port=$(egrep -lir "^{{site}}$" /opt/zephyr/watcher/ports | xargs basename 2>/dev/null)
-    if $port; then
-        echo "port $port is already allocated to {{site}}"
-    else
+    if [ -v $port ]; then
         echo "no port found for {{site}}, allocating one now..."
         port=$(node /opt/zephyr/watcher/port-entrypoint.js {{site}})
+    else
+        echo "port $port is already allocated to {{site}}"
     fi
 
     if [ -f /etc/systemd/system/zephyrnet-{{site}}-deployment.service ]; then
