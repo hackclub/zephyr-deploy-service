@@ -20,7 +20,7 @@ const getPort = (domain) => {
     console.log(`...adding lockfile on port directory`)
     const releaseLock = lockfile.lockSync(portsDir)
 
-    const randomPort = Math.random() * (65535 - 1024) + 1024 // port range is 1024-65535
+    const randomPort = Math.floor(Math.random() * (65535 - 1024) + 1024) // port range is 1024-65535
     console.log(`...trying port '${randomPort}'`)
     if (portIsInUse(randomPort) || portIsAllocated(randomPort)) {
         console.log(`...port ${randomPort} is not available`)
