@@ -119,3 +119,39 @@ if (!methods.includes("ISDIR") && folder.endsWith(".zephyr/")) {
 
     execute(['sudo nginx -s reload'])
 }
+
+// Only runs when folder is copied in
+if (methods.includes("ISDIR") && file.endsWith(".zephyr")) {
+    let type = "none"
+
+    const path = `${folder}${file}`
+    const files = readdirSync(path)
+    files.forEach((file) => {
+        if (file === "entrypoint.sh") {
+            type = "dynamic"
+        } else if (file === "index.html" && type !== "dynamic") {
+            type = "static"
+        }
+    })
+
+    switch (type) {
+        case "dynamic":
+            const dynamicConfTemplate = compile(readFileSync('/opt/zephyr/watcher/dynamic_conf_template.hbs', 'utf8'))
+            const name = file
+            const port = getPort(name)
+            console.log(`Port '${port}' allocated to domain '${name}'`)
+
+            writeFileSync(`/etc/nginx/sites-enabled/${name}.conf`, dynamicConfTemplate({
+                site: name,
+                port
+            }))
+
+            addRecord({
+                name,
+                type: "A",
+                content: "10.10.8.210"
+            })
+            break
+        
+    }
+}
