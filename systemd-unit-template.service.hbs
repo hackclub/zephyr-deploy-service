@@ -5,15 +5,14 @@
 [Unit]
 Description=ZephyrNET - {{site}}
 After=network.target
-ConditionPathIsDirectory=/opt/zephyrnet/{{site}}
-ConditionFileIsExecutable=/opt/zephyrnet/{{site}}/entrypoint.sh
+ConditionPathIsDirectory=/opt/zephyr/repos/{{site}}
+ConditionFileIsExecutable=/opt/zephyr/repos/{{site}}/entrypoint.sh
 
 [Service]
 User=orpheus
-WorkingDirectory=/opt/zephyrnet/{{site}}
+WorkingDirectory=/opt/zephyr/repos/{{site}}
 Environment=PORT={{port}}
-ExecStartPre=/opt/zephyrnet/{{site}}/entrypoint.sh
-ExecStart=/opt/zephyrnet/{{site}}/entrypoint.sh
+ExecStart=/opt/zephyr/repos/{{site}}/entrypoint.sh
 #TimeoutStartSec=60
 Restart=on-failure
 RestartSec=5
