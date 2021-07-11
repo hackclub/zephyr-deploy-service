@@ -154,4 +154,6 @@ if (methods.includes("ISDIR") && file.endsWith(".zephyr")) {
             break
         
     }
+
+    execute(['sudo nginx -s reload'])
 }
