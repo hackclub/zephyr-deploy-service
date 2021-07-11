@@ -7,6 +7,7 @@
     "envfile": "^6.14.0",
     "handlebars": "^4.7.7",
     "node-fetch": "^2.6.1",
+    "proper-lockfile": "^4.1.2",
     "sync-fetch": "^0.3.0"
   }
 }

@@ -1,62 +1,43 @@
-const fs = require("fs")
-const { join } = require("path")
+const { existsSync, writeFileSync } = require('fs')
+const lockfile = require('proper-lockfile')
 
-const dir = "/opt/zephyrnet"
-const ports_file = "/opt/ports/ports.json"
+const portsDir = "./ports"
 
- const getPorts = () => {
-    return JSON.parse(fs.readFileSync(ports_file))
+const portIsInUse = (port) => {
+    const result = execSync(`sudo lsof -nP -iTCP:${port} -sTCP:LISTEN >&2 >/dev/null ; echo $?`).toString()
+    return result.trim() === '0'
 }
 
-const random = (min, max) => { // min and max included 
-    return Math.floor(Math.random() * (max - min + 1) + min)
-}
-
- const genPort = (json) => {
-    const port = random(1000, 9999)
-    console.log(port)
-    const ports = json || Object.entries(JSON.parse(fs.readFileSync(ports_file)))
-    if (port in ports) {
-        return genPort(ports)
-    } else {
-        return port
-    }
-}
-
-const reservePort = (domain) => {
-    const port = genPort()
-    const ports = getPorts()
-    ports[domain] = port
-    fs.writeFileSync(ports_file, JSON.stringify(ports, null, 2))
-
-    return port
+const portIsAllocated = (port) => {
+    const exists = existsSync(`${portsDir}/${port}`)
+    return exists
 }
 
 const getPort = (domain) => {
-    const port = getPorts()[domain]
-    if (port) {
-        return port    
+    console.log('Trying to get a domain for', domain)
+
+    console.log(`...adding lockfile on port directory`)
+    const lock = lockfile.lockSync(portsDir)
+
+    const randomPort = Math.random() * (65535 - 1024) + 1024 // port range is 1024-65535
+    console.log(`...trying port '${randomPort}'`)
+    if (portIsInUse(randomPort) || portIsAllocated(randomPort)) {
+        console.log(`...port ${randomPort} is not available`)
+        return getPort(domain)
     } else {
-        return reservePort(domain)
+        console.log(`...port ${randomPort} is available`)
+
+        console.log(`...writing port allocation to /opt/zephyr/watcher/ports/${randomPort}`)
+        writeFileSync(`${portsDir}/${randomPort}`, domain)
+
+        console.log('...removing lockfile on port directory')
+        lock.unlockSync(portsDir)
+
+        return randomPort
     }
-    
 }
 
-const freePort = (domain) => {
-    let ports = getPorts()
-    if (ports[domain]) {
-        let { [domain]: cacheRemoved, ...portsUpdate } = ports;
-        fs.writeFileSync(ports_file, JSON.stringify(portsUpdate, null, 2))
-
-    }
-
-    return domain
-}
 
 module.exports = {
-    freePort,
     getPort,
-    reservePort,
-    genPort,
-    getPorts
 }
