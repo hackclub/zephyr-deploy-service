@@ -30,17 +30,17 @@ if [ $entrypoint_status -eq 0 ]; then
 
     if [ -f ~/.config/systemd/user/zephyrnet-{{site}}-deployment.service ]; then
         echo "restarting zephyrnet-{{site}}-deployment.service..."
-        sudo systemctl --user restart zephyrnet-{{site}}-deployment.service
+        systemctl --user restart zephyrnet-{{site}}-deployment.service
         echo "   ...done!"
     else
         echo "no existing systemd service found, initializing zephyrnet-{{site}}-deployment.service"
         handlebars --site '{{site}}' --port $port < /opt/zephyr/watcher/systemd-unit-template.service.hbs > ~/.config/systemd/user/zephyrnet-{{site}}-deployment.service
         echo "   ...systemd service created!"
-        sudo systemctl --user daemon-reload
+        systemctl --user daemon-reload
         echo "   ...systemd daemon reloaded!"
-        sudo systemctl --user enable zephyrnet-{{site}}-deployment.service
+        systemctl --user enable zephyrnet-{{site}}-deployment.service
         echo "   ...systemd service enabled!"
-        sudo systemctl --user start zephyrnet-{{site}}-deployment.service
+        systemctl --user start zephyrnet-{{site}}-deployment.service
         echo "   ...systemd service started!"
     fi
 else
