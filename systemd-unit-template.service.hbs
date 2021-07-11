@@ -9,7 +9,7 @@ ConditionPathIsDirectory=/opt/zephyr/repos/{{site}}
 ConditionFileIsExecutable=/opt/zephyr/repos/{{site}}/entrypoint.sh
 
 [Service]
-User=orpheus
+#User=orpheus
 WorkingDirectory=/opt/zephyr/repos/{{site}}
 Environment=PORT={{port}}
 ExecStart=/opt/zephyr/repos/{{site}}/entrypoint.sh
@@ -20,9 +20,9 @@ ExecReload=/bin/kill -HUP $MAINPID
 KillMode=process
 Restart=on-failure
 #RestartPreventExitStatus=255
-Type=notify
-RuntimeDirectory={{site}}
-RuntimeDirectoryMode=0755
+Type=simple
+#RuntimeDirectory={{site}}
+#RuntimeDirectoryMode=0755
 
 [Install]
 WantedBy=multi-user.target
