@@ -1,38 +1,31 @@
-const { existsSync, writeFileSync } = require('fs')
+const { existsSync } = require('fs')
 const lockfile = require('proper-lockfile')
-const portfinder = require('portfinder')
 
 const portsDir = "./ports"
 
-const getPortRecursive = async (domain) => {
-    return await portfinder.getPort((err, port) => {
-        if (err) {
-            throw err
-        }
-
-        const exists = existsSync(`${portsDir}/${port}`)
-        if (exists) {
-            console.log(`Port ${port} is already in use... Trying to find another open port.`)
-            return await getPortRecursive(domain)
-        } else {
-            const file = `${portsDir}/${port}`
-            writeFileSync(file, domain)
-
-            return port
-        }
-    })
+const portIsInUse = (port) => {
+    const result = execSync(`sudo lsof -nP -iTCP:${port} -sTCP:LISTEN >&2 >/dev/null ; echo $?`).toString()
+    return result.trim() === '0'
 }
-const getPort = (domain, recursivelyCalled = false) => {
+
+const portIsAllocated = (port) => {
+    const exists = existsSync(`${portsDir}/${port}`)
+    return exists
+}
+
+const getPort = (domain) => {
     const lock = lockfile.lockSync(portsDir)
 
-    const freePort = getPortRecursive(domain)
-
-    lock.unlock()
-
-    return freePort
+    const randomPort = Math.random() * (65535 - 1024) + 1024 // port range is 1024-65535
+    if (portIsInUse(randomPort) || portIsAllocated(randomPort)) {
+        return getPort(domain)
+    } else {
+        lock.unlockSync(portsDir)
+        return randomPort
+    }
 }
 
 
 module.exports = {
-    getPort
+    getPort,
 }
