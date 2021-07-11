@@ -10,19 +10,16 @@ ConditionFileIsExecutable=/opt/zephyr/repos/{{site}}/entrypoint.sh
 
 [Service]
 #User=orpheus
+User=git
 WorkingDirectory=/opt/zephyr/repos/{{site}}
 Environment=PORT={{port}}
 ExecStart=/opt/zephyr/repos/{{site}}/entrypoint.sh
-#TimeoutStartSec=60
 Restart=on-failure
-RestartSec=5
+RestartSec=10
 ExecReload=/bin/kill -HUP $MAINPID
 KillMode=process
 Restart=on-failure
-#RestartPreventExitStatus=255
 Type=simple
-#RuntimeDirectory={{site}}
-#RuntimeDirectoryMode=0755
 
 [Install]
 WantedBy=multi-user.target
