@@ -1,7 +1,8 @@
 const { existsSync, writeFileSync } = require('fs')
 const lockfile = require('proper-lockfile')
+const { execSync } = require('child_process')
 
-const portsDir = "./ports"
+const portsDir = "/opt/zephyr/watcher/ports"
 
 const portIsInUse = (port) => {
     const result = execSync(`sudo lsof -nP -iTCP:${port} -sTCP:LISTEN >&2 >/dev/null ; echo $?`).toString()
