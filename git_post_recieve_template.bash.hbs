@@ -17,15 +17,15 @@ user='systemctluser'
 git show HEAD:entrypoint.sh 1>&2 2>/dev/null
 entrypoint_status=$?
 if [ $entrypoint_status -eq 0 ]; then
-    echo "entrypoint.sh found, running deployment..."
-
+    echo "entrypoint.sh found, running deployment for user ${whoami}..."
 
     port=$(egrep -lir "^{{site}}$" /opt/zephyr/watcher/ports | xargs basename 2>/dev/null)
     if [ -v $port ]; then
-        echo "no port found for {{site}}, allocating one now..."
+        echo "[info] no port found for {{site}}, assinging a new one..."
         port=$(node /opt/zephyr/watcher/port-entrypoint.js {{site}})
+        echo "[info] $port was just assigned..."
     else
-        echo "port $port is already allocated to {{site}}"
+        echo "[info] $port is assigned to {{site}}"
     fi
 
     if [ -f /etc/systemd/system/zephyrnet-{{site}}-deployment.service ]; then
@@ -44,5 +44,5 @@ if [ $entrypoint_status -eq 0 ]; then
         echo "   ...systemd service started!"
     fi
 else
-    echo "No entrypoint.sh file, skipping dynamic deploy"
+    echo "[info] No entrypoint.sh file, skipping deploy"
 fi
