@@ -4,7 +4,7 @@ const { execSync } = require("child_process")
 const randomword = require("random-words")
 
 const create = () => {
-    const randopm = randomword()
+    const random = randomword()
     const path = `/opt/zephyrnet/${random}.zephyr`
     if (!existsSync(path)) {
         mkdirSync(path)
