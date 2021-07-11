@@ -19,13 +19,22 @@ entrypoint_status=$?
 if [ $entrypoint_status -eq 0 ]; then
     echo "entrypoint.sh found, running deployment..."
 
+
+    port=$(egrep -lir "^{{site}}$" /opt/zephyr/watcher/ports | xargs basename 2>/dev/null)
+    if $port; then
+        echo "port $port is already allocated to {{site}}"
+    else
+        echo "no port found for {{site}}, allocating one now..."
+        port=$(node /opt/zephyr/watcher/port-entrypoint.js {{site}})
+    fi
+
     if [ -f /etc/systemd/system/zephyrnet-{{site}}-deployment.service ]; then
         echo "restarting zephyrnet-{{site}}-deployment.service..."
         sudo -u $user sudo systemctl restart zephyrnet-{{site}}-deployment.service
         echo "   ...done!"
     else
         echo "no existing systemd service found, initializing zephyrnet-{{site}}-deployment.service"
-        handlebars --site '{{site}}' < /opt/zephyr/watcher/systemd-unit-template.service.hbs > /etc/systemd/system/zephyrnet-{{site}}-deployment.service
+        handlebars --site '{{site}}' --port $port < /opt/zephyr/watcher/systemd-unit-template.service.hbs > /etc/systemd/system/zephyrnet-{{site}}-deployment.service
         echo "   ...systemd service created!"
         sudo -u $user sudo systemctl daemon-reload
         echo "   ...systemd daemon reloaded!"
