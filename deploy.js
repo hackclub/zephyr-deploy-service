@@ -18,7 +18,7 @@ if (methods.includes("ISDIR") && file.endsWith(".zephyr")) {
     const deployRepo = `/opt/zephyr/repos/${file}`
 
     // Create the deploy repo & copy the git hook to it
-    execute([`git init ${deployRepo} --bare --shared`])
+    execute([`git init ${deployRepo} --shared`])
     const getHookTemplate = compile(readFileSync('/opt/zephyr/watcher/git_post_recieve_template.bash.hbs', 'utf8'))
     writeFileSync(`${deployRepo}/hooks/post-receive`, getHookTemplate({
         site: file
