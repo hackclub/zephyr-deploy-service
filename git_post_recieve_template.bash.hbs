@@ -6,7 +6,7 @@ git show HEAD:build.sh 1>&2 2>/dev/null
 buildfile_status=$?
 if [ $buildfile_status -eq 0 ]; then
     echo "build.sh found, running build..."
-    #   TODO: run build.sh
+    /opt/zephyr/repos/{{site}}/build.sh
     echo "   ...done!"
 fi
 
