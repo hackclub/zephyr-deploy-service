@@ -1,73 +1,38 @@
-const fs = require("fs")
-const { join } = require("path")
-const envfile = require('envfile')
+const { existsSync, writeFileSync } = require('fs')
+const lockfile = require('proper-lockfile')
+const portfinder = require('portfinder')
 
-const dir = "/opt/zephyrnet"
-const ports_file = "/dev/"
+const portsDir = "./ports"
 
- const getPorts = () => {
-    return JSON.parse(fs.readFileSync("./ports.json"))
+const getPortRecursive = async (domain) => {
+    return await portfinder.getPort((err, port) => {
+        if (err) {
+            throw err
+        }
+
+        const exists = existsSync(`${portsDir}/${port}`)
+        if (exists) {
+            console.log(`Port ${port} is already in use... Trying to find another open port.`)
+            return await getPortRecursive(domain)
+        } else {
+            const file = `${portsDir}/${port}`
+            writeFileSync(file, domain)
+
+            return port
+        }
+    })
+}
+const getPort = (domain, recursivelyCalled = false) => {
+    const lock = lockfile.lockSync(portsDir)
+
+    const freePort = getPortRecursive(domain)
+
+    lock.unlock()
+
+    return freePort
 }
 
-const random = (min, max) => { // min and max included 
-    return Math.floor(Math.random() * (max - min + 1) + min)
-}
-
- const genPort = (json) => {
-    const port = random(1000, 9999)
-    console.log(port)
-    const ports = json || Object.entries(JSON.parse(fs.readFileSync("./ports.json")))
-    if (port in ports) {
-        return genPort(ports)
-    } else {
-        return port
-    }
-}
-
-const reservePort = (domain) => {
-    const port = genPort()
-
-    const env = fs.readFileSync(join(dir, domain, '.env'))
-    env.PORT = port
-    fs.writeFileSync(join(dir, domain, '.env'), envfile.stringify(env))
-    const ports = getPorts()
-    ports[domain] = port
-    fs.writeFileSync("./ports.json", JSON.stringify(ports, null, 2))
-
-    return port
-}
-
-const getPort = (domain) => {
-    const port = getPorts()[domain]
-    if (port) {
-        return port    
-    } else {
-        reservePort(domain)
-        return getPorts()[domain]
-    }
-    
-}
-
-const freePort = (domain) => {
-    let ports = getPorts()
-    if (ports[domain] && fs.existsSync(join(dir, domain, '.env'))) {
-        let { PORT, ...env } = envfile.parse(fs.readFileSync(join(dir, domain, '.env')));
-        // remove env[domain];
-        console.log(env)
-        fs.writeFileSync(join(dir, domain, '.env'), envfile.stringify(env))
-        
-        let { [domain]: cacheRemoved, ...portsUpdate } = ports;
-        fs.writeFileSync("./ports.json", JSON.stringify(portsUpdate, null, 2))
-
-    }
-
-    return domain
-}
 
 module.exports = {
-    freePort,
-    getPort,
-    reservePort,
-    genPort,
-    getPorts
+    getPort
 }
