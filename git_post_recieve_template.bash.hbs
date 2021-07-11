@@ -17,7 +17,7 @@ user='systemctluser'
 git show HEAD:entrypoint.sh 1>&2 2>/dev/null
 entrypoint_status=$?
 if [ $entrypoint_status -eq 0 ]; then
-    echo "entrypoint.sh found, running deployment for user ${whoami}..."
+    echo "entrypoint.sh found, running deployment for user $(whoami)..."
 
     port=$(egrep -lir "^{{site}}$" /opt/zephyr/watcher/ports | xargs basename 2>/dev/null)
     if [ -v $port ]; then
