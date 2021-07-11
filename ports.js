@@ -1,5 +1,6 @@
 const { existsSync, writeFileSync } = require('fs')
 const lockfile = require('proper-lockfile')
+const { execSync } = require('child_process')
 
 const portsDir = "/opt/zephyr/watcher/ports"
 
