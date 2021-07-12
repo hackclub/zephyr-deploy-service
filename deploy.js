@@ -72,6 +72,7 @@ const addRecord = (obj) => fetch("http://10.10.8.210:9191/api/v1/servers/localho
 if (!methods.includes("ISDIR") && folder.endsWith(".zephyr/")) {
     switch (file) {
         case "entrypoint.sh": {
+            execSync(`chmod +x ${folder}${file}`)
             if (readdirSync(folder).includes("index.html")) {
                 console.log('[warn] index.html already exists in folder, ignoring entrypoint.sh...')
                 break
@@ -91,6 +92,9 @@ if (!methods.includes("ISDIR") && folder.endsWith(".zephyr/")) {
                 type: "A",
                 content: "10.10.8.210"
             })
+
+
+
             break
         }
         case "index.html": {
@@ -143,6 +147,7 @@ if (methods.includes("ISDIR") && file.endsWith(".zephyr")) {
             const dynamicConfTemplate = compile(readFileSync('/opt/zephyr/watcher/dynamic_conf_template.hbs', 'utf8'))
             
             const port = getPort(name)
+            execSync(`chmod +x ${folder}${file}/entrypoint.sh`)
             console.log(`Port '${port}' allocated to domain '${name}'`)
 
             writeFileSync(`/etc/nginx/sites-enabled/${name}.conf`, dynamicConfTemplate({
