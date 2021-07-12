@@ -9,13 +9,11 @@ ConditionPathIsDirectory=/opt/zephyr/watcher/repos/{{site}}
 ConditionFileIsExecutable=/opt/zephyr/watcher/repos/{{site}}/entrypoint.sh
 
 [Service]
-User=git
 WorkingDirectory=/opt/zephyr/watcher/repos/{{site}}
 Environment=PORT={{port}}
 ExecStart=/opt/zephyr/watcher/repos/{{site}}/entrypoint.sh
-#TimeoutStartSec=60
 Restart=on-failure
-RestartSec=10
+RestartSec=5
 ExecReload=/bin/kill -HUP $MAINPID
 KillMode=process
 Restart=on-failure
