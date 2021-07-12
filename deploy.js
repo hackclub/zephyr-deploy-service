@@ -153,7 +153,20 @@ if (methods.includes("ISDIR") && file.endsWith(".zephyr")) {
                 content: "10.10.8.210"
             })
             break
-        
+        case "static":
+            const staticConfTemplate = compile(readFileSync('/opt/zephyr/watcher/static_conf_template.hbs', 'utf8'))
+            const name = file
+
+            writeFileSync(`/etc/nginx/sites-enabled/${name}.conf`, staticConfTemplate({
+                site: name
+            }))
+
+            addRecord({
+                name,
+                type: "A",
+                content: "10.10.8.210"
+            })
+            break
     }
 
     execute(['sudo nginx -s reload'])
