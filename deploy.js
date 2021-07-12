@@ -135,6 +135,7 @@ if (methods.includes("ISDIR") && file.endsWith(".zephyr")) {
         }
     })
     const name = file
+    console.log(type)
 
     switch (type) {
         case "dynamic":
