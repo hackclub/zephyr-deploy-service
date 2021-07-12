@@ -134,11 +134,12 @@ if (methods.includes("ISDIR") && file.endsWith(".zephyr")) {
             type = "static"
         }
     })
+    const name = file
 
     switch (type) {
         case "dynamic":
             const dynamicConfTemplate = compile(readFileSync('/opt/zephyr/watcher/dynamic_conf_template.hbs', 'utf8'))
-            const name = file
+            
             const port = getPort(name)
             console.log(`Port '${port}' allocated to domain '${name}'`)
 
@@ -153,9 +154,10 @@ if (methods.includes("ISDIR") && file.endsWith(".zephyr")) {
                 content: "10.10.8.210"
             })
             break
+        case "none":
         case "static":
             const staticConfTemplate = compile(readFileSync('/opt/zephyr/watcher/static_conf_template.hbs', 'utf8'))
-            const name = file
+            
 
             writeFileSync(`/etc/nginx/sites-enabled/${name}.conf`, staticConfTemplate({
                 site: name
