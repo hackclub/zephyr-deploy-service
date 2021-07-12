@@ -5,15 +5,15 @@
 [Unit]
 Description=ZephyrNET - {{site}}
 After=network.target
-ConditionPathIsDirectory=/opt/zephyr/repos/{{site}}
-ConditionFileIsExecutable=/opt/zephyr/repos/{{site}}/entrypoint.sh
+ConditionPathIsDirectory=/opt/zephyr/watcher/repos/{{site}}
+ConditionFileIsExecutable=/opt/zephyr/watcher/repos/{{site}}/entrypoint.sh
 
 [Service]
-#User=orpheus
 User=git
-WorkingDirectory=/opt/zephyr/repos/{{site}}
+WorkingDirectory=/opt/zephyr/watcher/repos/{{site}}
 Environment=PORT={{port}}
-ExecStart=/opt/zephyr/repos/{{site}}/entrypoint.sh
+ExecStart=/opt/zephyr/watcher/repos/{{site}}/entrypoint.sh
+#TimeoutStartSec=60
 Restart=on-failure
 RestartSec=10
 ExecReload=/bin/kill -HUP $MAINPID

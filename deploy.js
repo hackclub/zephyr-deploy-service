@@ -15,7 +15,7 @@ const execute = (arr) => {
 
 if (methods.includes("ISDIR") && file.endsWith(".zephyr")) {
     const originRepo = `${folder}${file}`
-    const deployRepo = `/opt/zephyr/repos/${file}`
+    const deployRepo = `/opt/zephyr/watcher/repos/${file}`
 
     // Create the deploy repo & copy the git hook to it
     execute([`git init ${deployRepo} --shared`])

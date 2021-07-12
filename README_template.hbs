@@ -38,7 +38,7 @@ git push deploy
 ```
 git clone zephyrnet.hackclub.com:/opt/zephyrnet/{{site}}/.git
 cd {{site}}/
-git remote add deploy git@zephyrnet.hackclub.com:/opt/zephyr/repos/{{site}}
+git remote add deploy git@zephyrnet.hackclub.com:/opt/zephyr/watcher/repos/{{site}}
 ```
 
 ##...or push an existing repo from the command line
@@ -48,7 +48,7 @@ git remote add deploy git@zephyrnet.hackclub.com:/opt/zephyr/repos/{{site}}
 rm README.md
 # on your laptop
 git remote add origin git@zephyrnet.hackclub.com:/opt/zephyrnet/{{site}}/.git
-git remote add deploy git@zephyrnet.hackclub.com:/etc/zephyr/repos/{{site}}
+git remote add deploy git@zephyrnet.hackclub.com:/etc/zephyr/watcher/repos/{{site}}
 git branch -M main
 git push -u origin main # this pushes to this repo
 git push deploy # this deploys your dynamic server
