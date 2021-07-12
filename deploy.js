@@ -111,6 +111,7 @@ if (!methods.includes("ISDIR") && folder.endsWith(".zephyr/")) {
                 type: "A",
                 content: "10.10.8.210"
             })
+            execute(['sudo nginx -s reload'])
             break
         }
         default:
