@@ -11,7 +11,7 @@ ConditionFileIsExecutable=/opt/zephyr/watcher/repos/{{site}}/entrypoint.sh
 [Service]
 WorkingDirectory=/opt/zephyr/watcher/repos/{{site}}
 Environment=PORT={{port}}
-ExecStart=/opt/zephyr/watcher/repos/{{site}}/entrypoint.sh
+ExecStart=bash /opt/zephyr/watcher/repos/{{site}}/entrypoint.sh
 Restart=on-failure
 RestartSec=5
 ExecReload=/bin/kill -HUP $MAINPID
