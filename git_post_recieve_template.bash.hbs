@@ -38,7 +38,7 @@ if [ $entrypoint_status -eq 0 ]; then
         echo "   ...done!"
     else
         echo "no existing systemd service found, initializing zephyrnet-{{site}}-deployment.service"
-        handlebars --site '{{site}}' --port $port < /opt/zephyr/watcher/systemd-unit-template.service.hbs > ~/.config/systemd/user/zephyrnet-{{site}}-deployment.service
+        node /opt/zephyr/watcher/deployment-hbs.js '{{site}}' $port >  ~/.config/systemd/user/zephyrnet-{{site}}-deployment.service
         echo "   ...systemd service created!"
         systemctl --user daemon-reload
         echo "   ...systemd daemon reloaded!"
