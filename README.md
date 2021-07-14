@@ -10,4 +10,7 @@ This script runs on the following assumptions:
   - The `git` user has read/write access to
     - `/opt/zephyr/watcher/ports`
     - `/opt/zephyr/watcher/repos`
+  - The `git` user has passwordless sudo access to
+    - systemctl
+    - lsof
 - Run yarn install
