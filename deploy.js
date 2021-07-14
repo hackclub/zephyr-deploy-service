@@ -52,12 +52,12 @@ if (!methods.includes("ISDIR") && folder.endsWith(".zephyr/")) {
                 break
             }
             const dynamicConfTemplate = compile(readFileSync('/opt/zephyr/watcher/dynamic_conf_template.hbs', 'utf8'))
-            const name = folder.split("/")[3]
+            const name = folder.split("/")[3].trim()
             const port = getPort(name)
             console.log(`Port '${port}' allocated to domain '${name}'`)
 
             writeFileSync(`/etc/nginx/sites-enabled/${name}.conf`, dynamicConfTemplate({
-                site: name,
+                site: name.trim(),
                 port
             }))
 
@@ -74,7 +74,7 @@ if (!methods.includes("ISDIR") && folder.endsWith(".zephyr/")) {
             }
             console.log(`[log] loading static file loader`)
             const staticConfTemplate = compile(readFileSync('/opt/zephyr/watcher/static_conf_template.hbs', 'utf8'))
-            const name = folder.split("/")[3]
+            const name = folder.split("/")[3].trim()
 
             writeFileSync(`/etc/nginx/sites-enabled/${name}.conf`, staticConfTemplate({
                 site: name
@@ -116,7 +116,7 @@ if (methods.includes("ISDIR") && file.endsWith(".zephyr")) {
             console.log(`Port '${port}' allocated to domain '${name}'`)
 
             writeFileSync(`/etc/nginx/sites-enabled/${name}.conf`, dynamicConfTemplate({
-                site: name,
+                site: name.trim(),
                 port
             }))
 
