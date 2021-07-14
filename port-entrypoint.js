@@ -1,3 +1,7 @@
-const [, , name, methods, dir] = process.argv;
+const { getPort } = require("./ports");
 
-console.log(process.argv)
+const [...others, domain] = process.argv;
+
+const port = getPort(domain)
+
+process.stdout.write(port)
