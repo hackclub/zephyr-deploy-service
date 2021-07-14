@@ -1,8 +1,8 @@
 const { readdirSync, readFileSync, writeFileSync, existsSync } = require('fs')
-const fetch = require('sync-fetch')
 const { compile } = require("handlebars");
 const { execSync } = require('child_process')
-const { getPort } = require('./ports')
+const { getPort } = require('./ports');
+const { default: pdnsChange } = require('./pdns');
 
 const [, , folder, methods, file] = process.argv;
 console.log(process.argv)
@@ -42,32 +42,6 @@ if (methods.includes("ISDIR") && file.endsWith(".zephyr")) {
     execute([`chmod -R a+wrx ${deployRepo}`])
 }
 
-// Helper function to add in a DNS record to a given domain.
-const addRecord = (obj) => fetch("http://10.10.8.210:9191/api/v1/servers/localhost/zones/zephyr", {
-    body: `{
-
-"rrsets": [
-  {
-    "name": "${obj.name}.",
-    "type":"${obj.type}",
-"ttl": 1,          
-"changetype": "REPLACE",
-    "records": [
-      {       "content": "${obj.content}",
-        "disabled": false,
-        "type": "${obj.type}",
-        "priority": 0
-      }
-    ]
-  }          ]      }`,
-    headers: {
-        "Content-Type": "application/json",
-
-        "X-Api-Key": "TUJ0WjVRSk4yWmF1aFM2"
-    },
-    method: "PATCH"
-})
-
 // We need to check only on file creation, not folders, and we can emulate first-tier checking
 if (!methods.includes("ISDIR") && folder.endsWith(".zephyr/")) {
     switch (file) {
@@ -87,14 +61,10 @@ if (!methods.includes("ISDIR") && folder.endsWith(".zephyr/")) {
                 port
             }))
 
-            addRecord({
-                name,
-                type: "A",
-                content: "10.10.8.210"
+            pdnsChange({
+                domain: name,
+                changetype: "REPLACE" // this is PDNS's way of adding or updating a record
             })
-
-
-
             break
         }
         case "index.html": {
