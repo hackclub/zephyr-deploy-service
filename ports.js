@@ -14,24 +14,24 @@ const portIsAllocated = (port) => {
     return exists
 }
 
-const getPort = (domain) => {
-    console.log('Trying to get a domain for', domain)
+const getPort = (domain, entrypoint=false) => {
+    !entrypoint && console.log('Trying to get a domain for', domain)
 
-    console.log(`...adding lockfile on port directory`)
+    !entrypoint && console.log(`...adding lockfile on port directory`)
     const releaseLock = lockfile.lockSync(portsDir)
 
     const randomPort = Math.floor(Math.random() * (65535 - 1024) + 1024) // port range is 1024-65535
-    console.log(`...trying port '${randomPort}'`)
+    !entrypoint && console.log(`...trying port '${randomPort}'`)
     if (portIsInUse(randomPort) || portIsAllocated(randomPort)) {
-        console.log(`...port ${randomPort} is not available`)
+        !entrypoint && console.log(`...port ${randomPort} is not available`)
         return getPort(domain)
     } else {
-        console.log(`...port ${randomPort} is available`)
+        !entrypoint && console.log(`...port ${randomPort} is available`)
 
-        console.log(`...writing port allocation to /opt/zephyr/watcher/ports/${randomPort}`)
+        !entrypoint && console.log(`...writing port allocation to /opt/zephyr/watcher/ports/${randomPort}`)
         writeFileSync(`${portsDir}/${randomPort}`, domain)
 
-        console.log('...removing lockfile on port directory')
+        !entrypoint && console.log('...removing lockfile on port directory')
         releaseLock()
         
 
