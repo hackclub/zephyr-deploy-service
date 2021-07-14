@@ -4,4 +4,4 @@ const domain = process.argv[process.argv.length - 1];
 
 const port = getPort(domain)
 
-process.stdout.write(port)
+process.stdout.write(port.toString())
