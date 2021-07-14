@@ -16,11 +16,9 @@ const portIsAllocated = (port) => {
 
 const getPort = (domain, entrypoint=false) => {
     try {
-        const existingPort = execSync(`egrep -lir "^${domain}" /opt/zephyr/watcher/ports | xargs basename 2>/dev/null`)
+        const existingPort = execSync(`egrep -lir "^${domain}$" /opt/zephyr/watcher/ports | xargs basename 2>/dev/null`)
         if (existingPort) return existingPort
     } catch(e) {
-    
-
     !entrypoint && console.log('Trying to get a domain for', domain)
 
     !entrypoint && console.log(`...adding lockfile on port directory`)
