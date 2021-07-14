@@ -27,7 +27,7 @@ if (methods.includes("ISDIR") && file.endsWith(".zephyr")) {
 
     // Create the origin repo and give it the deploy repo as a remote
     execute([`git init ${originRepo} --shared`])
-    execute([`cd ${originRepo} && git remote add deploy git@zephyrnet.hackclub.com:${deployRepo}`])
+    execute([`cd ${originRepo} && git remote add deploy git@161.35.60.153:${deployRepo}`])
 
     if (!existsSync(`/opt/zephyrnet/${file}/README.md`)) {
         const readmeTemplate = compile(readFileSync('/opt/zephyr/watcher/README_template.hbs', 'utf8'))
@@ -110,11 +110,11 @@ if (!methods.includes("ISDIR") && folder.endsWith(".zephyr/")) {
                 site: name
             }))
 
-            addRecord({
-                name,
-                type: "A",
-                content: "10.10.8.210"
-            })
+            // addRecord({
+            //     name,
+            //     type: "A",
+            //     content: "10.10.8.210"
+            // })
             execute(['sudo nginx -s reload'])
             break
         }
@@ -155,11 +155,11 @@ if (methods.includes("ISDIR") && file.endsWith(".zephyr")) {
                 port
             }))
 
-            addRecord({
-                name,
-                type: "A",
-                content: "10.10.8.210"
-            })
+            // addRecord({
+            //     name,
+            //     type: "A",
+            //     content: "10.10.8.210"
+            // })
             break
         case "none":
         case "static":
@@ -170,11 +170,11 @@ if (methods.includes("ISDIR") && file.endsWith(".zephyr")) {
                 site: name
             }))
 
-            addRecord({
-                name,
-                type: "A",
-                content: "10.10.8.210"
-            })
+            // addRecord({
+            //     name,
+            //     type: "A",
+            //     content: "10.10.8.210"
+            // })
             break
     }
 
