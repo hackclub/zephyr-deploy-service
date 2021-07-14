@@ -42,7 +42,7 @@ const getPort = (domain, entrypoint=false) => {
     }
 }
 
-const findPort = () => 
+
 
 
 module.exports = {
