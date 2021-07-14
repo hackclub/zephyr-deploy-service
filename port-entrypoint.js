@@ -1,6 +1,6 @@
 const { getPort } = require("./ports");
 
-const [...others, domain] = process.argv;
+const domain = process.argv[process.argv.length - 1];
 
 const port = getPort(domain)
 
