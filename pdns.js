@@ -27,4 +27,6 @@ const pdnsChange = ({ domain, changetype }) => {
   })
 }
 
-export default pdnsChange
+module.exports = {
+  pdnsChange
+}
