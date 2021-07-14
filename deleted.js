@@ -10,11 +10,14 @@ const name = folder.split("/")[3]
 
 execSync(`sudo systemctl stop zephyrnet-${name}.zephyr-deployment.service`)
 
+
 // Remove systemctl files
 const systemctlFile = `/etc/systemd/system/zephyrnet-${name}.zephyr-deployment.service`
 if (existsSync(systemctlFile)) {
     unlinkSync(systemctlFile)
 }
+
+execSync(`rm -rf /opt/zephyr/repos/watcher${name}`)
 
 // Reload systemctl
 execSync(`systemctl daemon-reload`)
