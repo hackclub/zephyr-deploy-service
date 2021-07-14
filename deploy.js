@@ -80,11 +80,6 @@ if (!methods.includes("ISDIR") && folder.endsWith(".zephyr/")) {
                 site: name
             }))
 
-            // addRecord({
-            //     name,
-            //     type: "A",
-            //     content: "10.10.8.210"
-            // })
             execute(['sudo nginx -s reload'])
             break
         }
@@ -125,11 +120,6 @@ if (methods.includes("ISDIR") && file.endsWith(".zephyr")) {
                 port
             }))
 
-            // addRecord({
-            //     name,
-            //     type: "A",
-            //     content: "10.10.8.210"
-            // })
             break
         case "none":
         case "static":
@@ -140,11 +130,6 @@ if (methods.includes("ISDIR") && file.endsWith(".zephyr")) {
                 site: name
             }))
 
-            // addRecord({
-            //     name,
-            //     type: "A",
-            //     content: "10.10.8.210"
-            // })
             break
     }
 
