@@ -6,4 +6,5 @@ This script runs on the following assumptions:
   - Get it running with `systemctl daemon-reload`
   - Get it running with `systemctl start deploy`
   - Get it running with `systemctl enable deploy`
+- There is a `git` user with a home directory
 - Run yarn install
