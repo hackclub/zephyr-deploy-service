@@ -15,8 +15,11 @@ const portIsAllocated = (port) => {
 }
 
 const getPort = (domain, entrypoint=false) => {
-    const existingPort = execSync(`egrep -lir "^${domain}" /opt/zephyr/watcher/ports | xargs basename 2>/dev/null`)
-    if (existingPort) return existingPort
+    try {
+        const existingPort = execSync(`egrep -lir "^${domain}" /opt/zephyr/watcher/ports | xargs basename 2>/dev/null`)
+        if (existingPort) return existingPort
+    } catch(e) {
+    
 
     !entrypoint && console.log('Trying to get a domain for', domain)
 
@@ -39,7 +42,7 @@ const getPort = (domain, entrypoint=false) => {
         
 
         return randomPort
-    }
+    }}
 }
 
 
