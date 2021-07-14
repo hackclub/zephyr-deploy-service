@@ -1,6 +1,6 @@
 const fetch = require('sync-fetch')
 
-const PDNS_IP = "10.10.8.210"
+const PDNS_IP = "10.101.252.250"
 const PDNS_URL = `http://${PDNS_IP}:9191`
 
 const pdnsChange = ({ domain, changetype }) => {
