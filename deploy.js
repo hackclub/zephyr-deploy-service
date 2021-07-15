@@ -26,16 +26,23 @@ if (methods.includes("ISDIR") && file.endsWith(".zephyr")) {
     }))
 
     // Create the origin repo and give it the deploy repo as a remote
-    execute([`git init ${originRepo} --shared`])
+    if (!existsSync(`${originRepo}/.git`)) {
+        execute([`git init ${originRepo} --shared`])
+    }
     execute([`cd ${originRepo} && git remote add deploy git@zephyrnet.hackclub.com:${deployRepo}`])
 
-    if (!existsSync(`/opt/zephyrnet/${file}/README.md`)) {
+    setTimeout(() => {
+        // run delayed to silence errors from recently cloned repos
+        const readmeExists = existsSync(`/opt/zephyrnet/${file}/README.md`)
+
+        const filename = readmeExists ? 'zephyr_deployment.md' : 'README.md'
+
         const readmeTemplate = compile(readFileSync('/opt/zephyr/watcher/README_template.hbs', 'utf8'))
         writeFileSync(`/opt/zephyrnet/${file}/README.md`, readmeTemplate({
             site: file
         }))
-        execute([`chmod -R a+wr ${originRepo}/README.md`])
-    }
+        execute([`chmod -R a+wr ${originRepo}/${filename}`])
+    }, 500)
 
     // Lazy way to make sure everyone can commit/push/pull & 
     execute([`chmod -R a+wr ${originRepo}/.git`])
