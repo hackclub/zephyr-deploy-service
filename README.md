@@ -31,3 +31,8 @@ Optional setup:
 - Deploy `https://github.com/hackclub/zephyr-hub` (rename to schedule.zephyr)
 - Deploy `https://github.com/hackclub/the-zephyr-chronicles` (rename to chronicle.zephyr)
 - Deploy start page (need to create & put at hackclub/start.zephyr)
+
+- The `git` user should use the shell (`chsh -s $(command -v git-shell) git`)
+  - Be aware this prevents ssh'ing in as the git user, which will make it harder to debug
+
+## Teardown of a project
