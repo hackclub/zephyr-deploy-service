@@ -5,6 +5,6 @@
 # user's home directory so that it's readable at
 # /home/git/git-shell-commands/no-interactive-login
 
-printf '%s\n' "Hi $USER! You've successfully authenticated, but I do not"
+printf '%s\n' "Hi! You've successfully authenticated, but I do not"
 printf '%s\n' "provide interactive shell access."
 exit 128
