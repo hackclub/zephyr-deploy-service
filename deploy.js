@@ -61,6 +61,8 @@ if (!methods.includes("ISDIR") && folder.endsWith(".zephyr/")) {
                 port
             }))
 
+            execute(['sudo nginx -s reload'])
+
             pdnsChange({
                 domain: name,
                 changetype: "REPLACE" // this is PDNS's way of adding or updating a record
@@ -88,8 +90,6 @@ if (!methods.includes("ISDIR") && folder.endsWith(".zephyr/")) {
 
             break
     }
-
-    execute(['sudo nginx -s reload'])
 }
 
 // Only runs when folder is copied in
