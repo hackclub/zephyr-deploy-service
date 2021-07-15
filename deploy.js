@@ -2,7 +2,7 @@ const { readdirSync, readFileSync, writeFileSync, existsSync } = require('fs')
 const { compile } = require("handlebars");
 const { execSync } = require('child_process')
 const { getPort } = require('./ports');
-const { default: pdnsChange } = require('./pdns');
+const { pdnsChange } = require('./pdns');
 
 const [, , folder, methods, file] = process.argv;
 console.log(process.argv)
