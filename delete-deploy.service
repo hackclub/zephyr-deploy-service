@@ -1,0 +1,10 @@
+[Unit]
+Description=Delete Deploy Service for Zephyr
+
+[Install]
+WantedBy=multi-user.target
+
+[Service]
+ExecStart=/opt/zephyr/watcher/delete.bash
+Restart=on-failure
+EnvironmentFile=/etc/environment

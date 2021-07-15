@@ -1,0 +1,10 @@
+[Unit]
+Description=Create Deploy Service for Zephyr
+
+[Install]
+WantedBy=multi-user.target
+
+[Service]
+ExecStart=/opt/zephyr/watcher/create.bash
+Restart=on-failure
+EnvironmentFile=/etc/environment

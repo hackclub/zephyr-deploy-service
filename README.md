@@ -1,12 +1,17 @@
 This script runs on the following assumptions:
 
+# Setup
+
 - This is running in `/opt/zephyr/watcher`
   - Run `yarn install`
 - There is a folder in `/opt/zephyrnet`
-- There is a symlink from `/etc/systemd/system/deploy.service` -> `/opt/zephyr/watcher/deploy.service`
+- There is a symlink from `/etc/systemd/system/create-deploy.service` -> `/opt/zephyr/watcher/create-deploy.service`
+- There is a symlink from `/etc/systemd/system/delete-deploy.service` -> `/opt/zephyr/watcher/delete-deploy.service`
   - Get it running with `systemctl daemon-reload`
-  - Get it running with `systemctl start deploy`
-  - Get it running with `systemctl enable deploy`
+  - Get it running with `systemctl start create-deploy`
+  - Get it running with `systemctl start delete-deploy`
+  - Get it running with `systemctl enable create-deploy`
+  - Get it running with `systemctl enable delete-deploy`
 - There is a `git` user with a home directory
   - The `git` user has a `~/.config/systemd/user/` folder in it's home dir
   - The `git` user has read/write access to
