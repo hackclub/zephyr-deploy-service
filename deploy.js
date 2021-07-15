@@ -61,12 +61,14 @@ if (!methods.includes("ISDIR") && folder.endsWith(".zephyr/")) {
                 port
             }))
 
-            execute(['sudo nginx -s reload'])
-
             pdnsChange({
                 domain: name,
                 changetype: "REPLACE" // this is PDNS's way of adding or updating a record
             })
+
+            execute(['sudo nginx -s reload'])
+
+            
             break
         }
         case "index.html": {
