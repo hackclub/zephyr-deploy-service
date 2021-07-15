@@ -27,7 +27,7 @@ if (methods.includes("ISDIR") && file.endsWith(".zephyr")) {
 
     // Create the origin repo and give it the deploy repo as a remote
     execute([`git init ${originRepo} --shared`])
-    execute([`cd ${originRepo} && git remote add deploy git@161.35.60.153:${deployRepo}`])
+    execute([`cd ${originRepo} && git remote add deploy git@zephyrnet.hackclub.com:${deployRepo}`])
 
     if (!existsSync(`/opt/zephyrnet/${file}/README.md`)) {
         const readmeTemplate = compile(readFileSync('/opt/zephyr/watcher/README_template.hbs', 'utf8'))
@@ -85,6 +85,7 @@ if (!methods.includes("ISDIR") && folder.endsWith(".zephyr/")) {
         }
         default:
             console.log("[warn] could not identify type of directory.")
+
             break
     }
 
