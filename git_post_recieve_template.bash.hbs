@@ -34,6 +34,7 @@ if [ $entrypoint_status -eq 0 ]; then
 
     if [ -f ~/.config/systemd/user/zephyrnet-{{site}}-deployment.service ]; then
         echo "restarting zephyrnet-{{site}}-deployment.service..."
+        systemctl --user daemon-reload
         systemctl --user restart zephyrnet-{{site}}-deployment.service
         echo "   ...done!"
     else
