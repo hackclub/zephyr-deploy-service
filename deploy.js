@@ -18,7 +18,7 @@ if (methods.includes("ISDIR") && file.endsWith(".zephyr")) {
     const deployRepo = `/opt/zephyr/watcher/repos/${file}`
 
     // Create the deploy repo & copy the git hook to it
-    execute([`mkdir ${deployRepo}`])
+//    execute([`mkdir ${deployRepo}`])
     execute([`git init ${deployRepo} --shared`])
     execute([`cd ${deployRepo}; git config receive.denyCurrentBranch updateInstead`])
     const getHookTemplate = compile(readFileSync('/opt/zephyr/watcher/git_post_recieve_template.bash.hbs', 'utf8'))
@@ -32,18 +32,18 @@ if (methods.includes("ISDIR") && file.endsWith(".zephyr")) {
     }
     execute([`cd ${originRepo} && git remote add deploy git@zephyrnet.hackclub.com:${deployRepo}`])
 
-    setTimeout(() => {
-        // run delayed to silence errors from recently cloned repos
+    //setTimeout(() => {
+	// run delayed to silence errors from recently cloned repos
         const readmeExists = existsSync(`/opt/zephyrnet/${file}/README.md`)
 
         const filename = readmeExists ? 'zephyr_deployment.md' : 'README.md'
-
         const readmeTemplate = compile(readFileSync('/opt/zephyr/watcher/README_template.hbs', 'utf8'))
         writeFileSync(`/opt/zephyrnet/${file}/README.md`, readmeTemplate({
             site: file
         }))
         execute([`chmod -R a+wr ${originRepo}/${filename}`])
-    }, 500)
+	execSync(`chmod a+wrx /opt/zephyrnet/${file}/README.md`)
+   // }, 500)
 
     // Lazy way to make sure everyone can commit/push/pull & 
     execute([`chmod -R a+wr ${originRepo}/.git`])
@@ -91,8 +91,14 @@ if (!methods.includes("ISDIR") && folder.endsWith(".zephyr/")) {
             writeFileSync(`/etc/nginx/sites-enabled/${name}.conf`, staticConfTemplate({
                 site: name
             }))
+		console.log(name)
 
+	    console.log(pdnsChange({
+		    domain: name,
+		    changetype: "REPLACE"
+	    }))
             execute(['sudo nginx -s reload'])
+console.log("hi")
             break
         }
         default:
@@ -131,6 +137,11 @@ if (methods.includes("ISDIR") && file.endsWith(".zephyr")) {
                 port
             }))
 
+		    pdnsChange({
+			    domain: name,
+			    changetype: "REPLACE"
+		    })
+
             break
         case "none":
         case "static":
@@ -140,6 +151,10 @@ if (methods.includes("ISDIR") && file.endsWith(".zephyr")) {
             writeFileSync(`/etc/nginx/sites-enabled/${name}.conf`, staticConfTemplate({
                 site: name
             }))
+
+		    pdnsChange({
+			    domain: name,
+			    changetype: "REPLACE"})
 
             break
     }

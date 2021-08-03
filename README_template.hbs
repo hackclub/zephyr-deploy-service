@@ -14,8 +14,8 @@ While connected to zephyrnet wifi, go to http://{{site}}/ (slash is important!) 
 touch server.js
 echo "const PORT = process.env.PORT; /* place server code here */" >> server.js
 
-touch entrypoint.js
-echo 'node server.js' >> entrypoint.js
+touch entrypoint.sh
+echo 'node server.js' >> entrypoint.sh
 
 git add -A
 git commit -m "Initial commit"
@@ -25,6 +25,7 @@ git push deploy
 While connected to zephyrnet wifi, go to http://{{site}}/ (slash is important!) in your browser.
 
 ##...or run a build on each push
+## feel free to take a look at start.zephyr/ for some more guidance
 
 ```
 touch build.sh
@@ -46,10 +47,11 @@ git remote add deploy git@zephyrnet.hackclub.com:/opt/zephyr/watcher/repos/{{sit
 ```
 # in this folder
 rm README.md
+git config receive.denyCurrentBranch updateInstead
 # on your laptop
 git remote add origin git@zephyrnet.hackclub.com:/opt/zephyrnet/{{site}}/.git
-git remote add deploy git@zephyrnet.hackclub.com:/etc/zephyr/watcher/repos/{{site}}
-git branch -M main
-git push -u origin main # this pushes to this repo
+git remote add deploy git@zephyrnet.hackclub.com:/opt/zephyr/watcher/repos/{{site}}
+git branch -M master
+git push -u origin  master # this pushes to this repo
 git push deploy # this deploys your dynamic server
 ```

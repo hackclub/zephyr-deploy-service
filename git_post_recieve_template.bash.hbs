@@ -32,14 +32,14 @@ if [ $entrypoint_status -eq 0 ]; then
         echo "[info] $port is assigned to {{site}}"
     fi
 
-    if [ -f ~/.config/systemd/user/zephyrnet-{{site}}-deployment.service ]; then
+    if [ -f /home/$user/.config/systemd/user/zephyrnet-{{site}}-deployment.service ]; then
         echo "restarting zephyrnet-{{site}}-deployment.service..."
         systemctl --user daemon-reload
         systemctl --user restart zephyrnet-{{site}}-deployment.service
         echo "   ...done!"
     else
         echo "no existing systemd service found, initializing zephyrnet-{{site}}-deployment.service"
-        node /opt/zephyr/watcher/deployment-hbs.js '{{site}}' $port >  ~/.config/systemd/user/zephyrnet-{{site}}-deployment.service
+        node /opt/zephyr/watcher/deployment-hbs.js '{{site}}' $port >  /home/$user/.config/systemd/user/zephyrnet-{{site}}-deployment.service
         echo "   ...systemd service created!"
         systemctl --user daemon-reload
         echo "   ...systemd daemon reloaded!"

@@ -2,13 +2,14 @@ const fetch = require('sync-fetch')
 
 const PDNS_IP = "10.101.252.250"
 const PDNS_URL = `http://${PDNS_IP}:9191`
+const PDNS_KEY = 'SDZVZmhZTk0xWWI1SUJQ'
 
 const pdnsChange = ({ domain, changetype }) => {
-  fetch(`${PDNS_URL}/api/v1/servers/localhost/zones/zephyr`, {
+  return fetch(`${PDNS_URL}/api/v1/servers/localhost/zones/zephyr`, {
     method: "PATCH",
     headers: {
       "Content-Type": "application/json",
-      "X-Api-Key": "TUJ0WjVRSk4yWmF1aFM2"
+      "X-Api-Key": PDNS_KEY
     },
     body: JSON.stringify({
       rrsets: [{
